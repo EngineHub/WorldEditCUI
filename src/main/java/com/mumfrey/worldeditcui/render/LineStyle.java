@@ -19,12 +19,12 @@ public class LineStyle
 	
 	public LineStyle(RenderType renderType, float lineWidth, int red, int green, int blue)
 	{
-		this(renderType, lineWidth, red, green, blue, 0xff);
+		this(renderType, 6.0f, red, green, blue, 0xff);
 	}
 	
 	public LineStyle(RenderType renderType, float lineWidth, int red, int green, int blue, int alpha)
 	{
-		this.lineWidth = lineWidth;
+		this.lineWidth = 6.0f;
 		this.red = red;
 		this.green = green;
 		this.blue = blue;
