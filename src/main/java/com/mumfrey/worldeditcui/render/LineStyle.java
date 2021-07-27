@@ -11,7 +11,7 @@ import com.mumfrey.worldeditcui.render.RenderStyle.RenderType;
  */
 public class LineStyle
 {
-	public static final float DEFAULT_WIDTH = 3.0f;
+	public static final float DEFAULT_WIDTH = 6.0f;
 
 	public final float lineWidth;
 	public final int red, green, blue, alpha;
