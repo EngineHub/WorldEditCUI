@@ -1,4 +1,4 @@
-WorldEditCUI Forked for changing some lines
+WorldEditCUI
 ------------
 
 [![Build Status](https://travis-ci.org/mikroskeem/WorldEditCUI.svg?branch=master)](https://travis-ci.org/mikroskeem/WorldEditCUI)
