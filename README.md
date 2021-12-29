@@ -28,7 +28,7 @@ To import the project into your IDE, see [FabricMC Wiki article](https://fabricm
 Misc
 ----
 
-You can subscribe to updates either by watching this repository, or [joining this Discord guild](https://discord.gg/KqqdgE7).
+You can subscribe to updates either by watching this repository, or [joining this Discord guild](https://discord.com/invite/EngineHub).
 
 Please note that the Discord guild is not yet moved to EngineHub's Discord guild, but that will likely occur in the near future.
 
