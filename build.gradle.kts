@@ -6,10 +6,10 @@ plugins {
     id("de.jjohannes.missing-metadata-guava") version "31.1.1"
 }
 
-val minecraftVersion = "1.19.1"
-val fabricLoaderVersion = "0.14.8"
-val fabricApiVersion = "0.58.5+1.19.1"
-val modmenuVersion = "4.0.5"
+val minecraftVersion = "1.19.2"
+val fabricLoaderVersion = "0.14.9"
+val fabricApiVersion = "0.60.0+1.19.2"
+val modmenuVersion = "4.0.6"
 val multiconnectVersion = "1.5.10"
 
 group = "org.enginehub.worldeditcui"
