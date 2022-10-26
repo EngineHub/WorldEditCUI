@@ -48,7 +48,8 @@ public class SettingsEntry extends ObjectSelectionList.Entry<SettingsEntry> {
         }
 
         // Widgets
-        this.widgetButton.y = this.resetButton.y = y + 1;
+        this.resetButton.setY(y + 1);
+        this.widgetButton.setY(y + 1);
         this.widgetButton.render(matrices, mouseX, mouseY, delta);
         this.resetButton.render(matrices,mouseX, mouseY, delta);
     }

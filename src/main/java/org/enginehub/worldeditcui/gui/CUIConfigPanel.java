@@ -63,7 +63,7 @@ public class CUIConfigPanel extends Screen implements Supplier<Screen> {
         }
         done = this.addRenderableWidget(new AbstractWidget((this.width - BUTTON_WIDTH) / 2, this.height - (BUTTON_HEIGHT + 7), BUTTON_WIDTH, BUTTON_HEIGHT, CommonComponents.GUI_DONE) {
             @Override
-            public void updateNarration(NarrationElementOutput builder) {
+            protected void updateWidgetNarration(final NarrationElementOutput builder) {
                 this.defaultButtonNarrationText(builder);
             }
 
@@ -94,7 +94,7 @@ public class CUIConfigPanel extends Screen implements Supplier<Screen> {
             } else if(value instanceof Boolean) {
                 element = this.addRenderableWidget(new AbstractWidget(buttonX, y, 70, BUTTON_HEIGHT, ((Boolean) value ? TRUE: FALSE)) {
                     @Override
-                    public void updateNarration(NarrationElementOutput builder) {
+                    protected void updateWidgetNarration(final NarrationElementOutput builder) {
                         this.defaultButtonNarrationText(builder);
                     }
 
@@ -146,7 +146,7 @@ public class CUIConfigPanel extends Screen implements Supplier<Screen> {
             }
             this.configList.addEntry(new SettingsEntry(this.configList, (textTemp != null) ? textTemp : Component.literal(text), element, this.addRenderableWidget(new AbstractWidget(buttonX + 75, y, BUTTON_HEIGHT, BUTTON_HEIGHT, Component.empty()) {
                 @Override
-                public void updateNarration(NarrationElementOutput builder) {
+                protected void updateWidgetNarration(final NarrationElementOutput builder) {
                     this.defaultButtonNarrationText(builder);
                 }
 
