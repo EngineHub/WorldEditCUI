@@ -1,6 +1,6 @@
 plugins {
     java
-    id("fabric-loom") version "1.0.12"
+    id("fabric-loom") version "1.0.+"
     id("io.github.juuxel.loom-quiltflower") version "1.8.0"
     id("com.github.ben-manes.versions") version "0.44.0"
     id("de.jjohannes.missing-metadata-guava") version "31.1.1"
