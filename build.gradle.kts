@@ -2,14 +2,14 @@ plugins {
     java
     id("fabric-loom") version "1.0.+"
     id("io.github.juuxel.loom-quiltflower") version "1.8.0"
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.44.0"
     id("de.jjohannes.missing-metadata-guava") version "31.1.1"
 }
 
-val minecraftVersion = "1.19.3-pre2"
-val fabricLoaderVersion = "0.14.10"
-val fabricApiVersion = "0.67.3+1.19.3"
-val modmenuVersion = "5.0.0-alpha.4"
+val minecraftVersion = "1.19.3"
+val fabricLoaderVersion = "0.14.11"
+val fabricApiVersion = "0.68.1+1.19.3"
+val modmenuVersion = "5.0.1"
 val multiconnectVersion = "1.5.10"
 
 group = "org.enginehub.worldeditcui"

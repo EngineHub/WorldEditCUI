@@ -21,7 +21,7 @@ WorldEdit selections will be shown without any configuration necessary, but the 
 Compiling
 ---------
 
-Run `_JAVA_OPTIONS="-Xmx2G" ./gradlew build`
+Run `./gradlew build`
 
 To import the project into your IDE, see [FabricMC Wiki article](https://fabricmc.net/wiki/tutorial:setup) and start from **Step 3**.
 
