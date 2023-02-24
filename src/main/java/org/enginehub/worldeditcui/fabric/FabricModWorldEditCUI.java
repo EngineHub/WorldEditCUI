@@ -104,7 +104,15 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         });
         WorldRenderEvents.LAST.register(ctx -> {
             if (!ctx.advancedTranslucency()) {
-                this.onPostRenderEntities(ctx);
+                try {
+                    RenderSystem.getModelViewStack().pushPose();
+                    RenderSystem.getModelViewStack().mulPoseMatrix(ctx.matrixStack().last().pose());
+                    RenderSystem.applyModelViewMatrix();
+                    this.onPostRenderEntities(ctx);
+                } finally {
+                    RenderSystem.getModelViewStack().popPose();
+                    RenderSystem.applyModelViewMatrix();
+                }
             }
         });
     }

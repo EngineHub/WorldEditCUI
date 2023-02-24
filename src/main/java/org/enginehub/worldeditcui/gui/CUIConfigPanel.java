@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -61,18 +62,18 @@ public class CUIConfigPanel extends Screen implements Supplier<Screen> {
         if (this.minecraft.level != null) {
             configList.setRenderBackground(false);
         }
-        done = this.addRenderableWidget(new AbstractWidget((this.width - BUTTON_WIDTH) / 2, this.height - (BUTTON_HEIGHT + 7), BUTTON_WIDTH, BUTTON_HEIGHT, CommonComponents.GUI_DONE) {
+        done = this.addRenderableWidget(new AbstractButton((this.width - BUTTON_WIDTH) / 2, this.height - (BUTTON_HEIGHT + 7), BUTTON_WIDTH, BUTTON_HEIGHT, CommonComponents.GUI_DONE) {
             @Override
             protected void updateWidgetNarration(final NarrationElementOutput builder) {
                 this.defaultButtonNarrationText(builder);
             }
 
             @Override
-            public void onClick(double mouseX, double mouseY) {
+            public void onPress() {
                 for (GuiEventListener button : children()) {
                     if (button instanceof EditBox widget) {
                         if (widget.isFocused()) {
-                            widget.changeFocus(false);
+                            widget.setFocused(false);
                         }
                     }
                 }
@@ -92,38 +93,42 @@ public class CUIConfigPanel extends Screen implements Supplier<Screen> {
                 LOGGER.warn("value of '{}' null, adding nothing", text);
                 continue;
             } else if(value instanceof Boolean) {
-                element = this.addRenderableWidget(new AbstractWidget(buttonX, y, 70, BUTTON_HEIGHT, ((Boolean) value ? TRUE: FALSE)) {
+                element = this.addRenderableWidget(new AbstractButton(buttonX, y, 70, BUTTON_HEIGHT, ((Boolean) value ? TRUE: FALSE)) {
                     @Override
                     protected void updateWidgetNarration(final NarrationElementOutput builder) {
                         this.defaultButtonNarrationText(builder);
                     }
 
                     @Override
-                    public void onClick(double mouseX, double mouseY) {
+                    public void onPress() {
                         if ((Boolean) (configuration.getConfigArray().get(text))) {
                             configuration.changeValue(text, false);
                         } else {
                             configuration.changeValue(text, true);
                         }
-                        this.changeFocus(true);
+                        this.setFocused(true);
                     }
 
                     @Override
-                    protected void onFocusedChanged(boolean bl) {
-                        this.setMessage((Boolean) configuration.getConfigArray().get(text) ? TRUE : FALSE);
-                        super.onFocusedChanged(bl);
+                    public void setFocused(final boolean bl) {
+                        if (this.isFocused() != bl) {
+                            this.setMessage((Boolean) configuration.getConfigArray().get(text) ? TRUE : FALSE);
+                        }
+                        super.setFocused(bl);
                     }
                 });
             } else if(value instanceof Colour) {
                 element = this.addRenderableWidget(new TextFieldWidgetTemp(this.font, buttonX, y, 70, BUTTON_HEIGHT, Component.literal(((Colour)value).hexString()), ((Colour)value).hexString()) {
                     @Override
-                    protected void onFocusedChanged(boolean bl) {
-                        if (bl) {
-                            this.setValue(((Colour)configuration.getConfigArray().get(text)).hexString());
-                        } else {
-                            configuration.changeValue(text, Colour.parseRgbaOrNull(this.getValue()));
+                    public void setFocused(final boolean focused) {
+                        if (this.isFocused() != focused) {
+                            if (focused) {
+                                this.setValue(((Colour) configuration.getConfigArray().get(text)).hexString());
+                            } else {
+                                configuration.changeValue(text, Colour.parseRgbaOrNull(this.getValue()));
+                            }
                         }
-                        super.onFocusedChanged(bl);
+                        super.setFocused(focused);
                     }
 
                     @Override
@@ -144,16 +149,16 @@ public class CUIConfigPanel extends Screen implements Supplier<Screen> {
                 LOGGER.warn("WorldEditCUI has option {} with unknown data type {}", text, value.getClass().getName());
                 continue;
             }
-            this.configList.addEntry(new SettingsEntry(this.configList, (textTemp != null) ? textTemp : Component.literal(text), element, this.addRenderableWidget(new AbstractWidget(buttonX + 75, y, BUTTON_HEIGHT, BUTTON_HEIGHT, Component.empty()) {
+            this.configList.addEntry(new SettingsEntry(this.configList, (textTemp != null) ? textTemp : Component.literal(text), element, this.addRenderableWidget(new AbstractButton(buttonX + 75, y, BUTTON_HEIGHT, BUTTON_HEIGHT, Component.empty()) {
                 @Override
                 protected void updateWidgetNarration(final NarrationElementOutput builder) {
                     this.defaultButtonNarrationText(builder);
                 }
 
                 @Override
-                public void onClick(double mouseX, double mouseY) {
+                public void onPress() {
                     configuration.changeValue(text, configuration.getDefaultValue(text));
-                    element.changeFocus(false);
+                    element.setFocused(false);
                 }
             })));
         }

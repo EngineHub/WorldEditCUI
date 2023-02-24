@@ -36,7 +36,7 @@ public class SettingsWidget extends ObjectSelectionList<SettingsEntry> {
     }
 
     @Override
-    protected boolean isFocused() {
+    public boolean isFocused() {
         return parent.getFocused() == this;
     }
 

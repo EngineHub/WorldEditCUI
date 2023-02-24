@@ -90,7 +90,7 @@ public class CUIListenerWorldRender
 			poseStack.pushPose();
 			RenderSystem.disableCull();
 			RenderSystem.enableBlend();
-			RenderSystem.disableTexture();
+			// RenderSystem.disableTexture();
 			RenderSystem.enableDepthTest();
 			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
 			RenderSystem.depthMask(true);
@@ -107,7 +107,7 @@ public class CUIListenerWorldRender
 
 			RenderSystem.depthFunc(GL32.GL_LEQUAL);
 			RenderSystem.setShader(() -> oldShader);
-			RenderSystem.enableTexture();
+			// RenderSystem.enableTexture();
 			RenderSystem.disableBlend();
 			RenderSystem.enableCull();
 			poseStack.popPose();
