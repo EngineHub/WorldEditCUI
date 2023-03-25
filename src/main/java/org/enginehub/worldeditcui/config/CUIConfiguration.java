@@ -8,6 +8,7 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
 import org.enginehub.worldeditcui.InitialisationFactory;
 import org.enginehub.worldeditcui.render.ConfiguredColour;
 import org.jetbrains.annotations.Nullable;
@@ -29,8 +30,7 @@ import java.util.Map;
  * @author Adam Mummery-Smith
  * @author Jesús Sanz - Modified to work with the config GUI implementation
  */
-public final class CUIConfiguration implements InitialisationFactory
-{
+public final class CUIConfiguration implements InitialisationFactory {
 	private static final String CONFIG_FILE_NAME = "worldeditcui.config.json";
 
 	private static final Gson GSON = new GsonBuilder()
@@ -70,7 +70,6 @@ public final class CUIConfiguration implements InitialisationFactory
 	    .create();
 
 	private boolean debugMode = false;
-	private boolean ignoreUpdates = false;
 	private boolean promiscuous = false;
 	private boolean clearAllOnKey = false;
 
@@ -96,15 +95,11 @@ public final class CUIConfiguration implements InitialisationFactory
 	 * exist. It then reads the file and sets each variable to the proper value.
 	 */
 	@Override
-	public void initialise()
-	{
+	public void initialise() {
 		int index = 0;
-		try
-		{
-			for (Field field : this.getClass().getDeclaredFields())
-			{
-				if (field.getType() == Colour.class)
-				{
+		try {
+			for (Field field : this.getClass().getDeclaredFields()) {
+				if (field.getType() == Colour.class) {
 					ConfiguredColour configuredColour = ConfiguredColour.values()[index++];
 					Colour colour = Colour.firstOrDefault((Colour)field.get(this), configuredColour.getColour().hexString());
 					field.set(this, colour);
@@ -112,74 +107,56 @@ public final class CUIConfiguration implements InitialisationFactory
 				}
 			}
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
 		this.save();
 	}
 
-	public boolean isDebugMode()
-	{
+	public boolean isDebugMode() {
 		return this.debugMode;
 	}
 
-	public boolean ignoreUpdates()
-	{
-		return this.ignoreUpdates;
-	}
-
-	public boolean isPromiscuous()
-	{
+	public boolean isPromiscuous() {
 		return this.promiscuous;
 	}
 
-	public void setPromiscuous(boolean promiscuous)
-	{
+	public void setPromiscuous(boolean promiscuous) {
 		this.promiscuous = promiscuous;
 	}
 
-	public boolean isClearAllOnKey()
-	{
+	public boolean isClearAllOnKey() {
 		return this.clearAllOnKey;
 	}
 
-	public void setClearAllOnKey(boolean clearAllOnKey)
-	{
+	public void setClearAllOnKey(boolean clearAllOnKey) {
 		this.clearAllOnKey = clearAllOnKey;
 	}
 
-	private static Path getConfigFile()
-	{
+	private static Path getConfigFile() {
 		return FabricLoader.getInstance().getConfigDir().resolve(CUIConfiguration.CONFIG_FILE_NAME);
 	}
 
-	public static CUIConfiguration create()
-	{
+	public static CUIConfiguration create() {
 		Path jsonFile = getConfigFile();
 
 		CUIConfiguration config = null;
-		if (Files.exists(jsonFile))
-		{
-			try (Reader fileReader = Files.newBufferedReader(jsonFile, StandardCharsets.UTF_8))
-			{
+		if (Files.exists(jsonFile)) {
+			try (Reader fileReader = Files.newBufferedReader(jsonFile, StandardCharsets.UTF_8)) {
 				config = CUIConfiguration.GSON.fromJson(fileReader, CUIConfiguration.class);
 			}
-			catch (Exception ex)
-			{
+			catch (Exception ex) {
 				ex.printStackTrace();
 			}
 		}
 
-		if (config == null) // load failed or file didn't exist
-		{
+		if (config == null) { // load failed or file didn't exist
 			config = new CUIConfiguration();
 		}
 
 
 		configArray.put("debugMode", config.debugMode);
-		configArray.put("ignoreUpdates", config.ignoreUpdates);
 		configArray.put("promiscuous", config.promiscuous);
 		configArray.put("clearAllOnKey", config.clearAllOnKey);
 
@@ -215,7 +192,6 @@ public final class CUIConfiguration implements InitialisationFactory
 
 	public void configChanged() {
 		debugMode 				= (Boolean) configArray.get("debugMode");
-		ignoreUpdates 			= (Boolean) configArray.get("ignoreUpdates");
 		promiscuous 			= (Boolean) configArray.get("promiscuous");
 		clearAllOnKey 			= (Boolean) configArray.get("clearAllOnKey");
 
@@ -237,65 +213,73 @@ public final class CUIConfiguration implements InitialisationFactory
 	}
 
 	public Object getDefaultValue(String text) {
-		switch(text) {
-			case "debugMode":
-			case "ignoreUpdates":
-			case "promiscuous":
-			case "clearAllOnKey": return false;
+		return switch (text) {
+			case "debugMode", "promiscuous", "clearAllOnKey" -> false;
+			case "cuboidGridColor" -> ConfiguredColour.CUBOIDGRID.getDefault();
+			case "cuboidEdgeColor" -> ConfiguredColour.CUBOIDBOX.getDefault();
+			case "cuboidFirstPointColor" -> ConfiguredColour.CUBOIDPOINT1.getDefault();
+			case "cuboidSecondPointColor" -> ConfiguredColour.CUBOIDPOINT2.getDefault();
+			case "polyGridColor" -> ConfiguredColour.POLYGRID.getDefault();
+			case "polyEdgeColor" -> ConfiguredColour.POLYBOX.getDefault();
+			case "polyPointColor" -> ConfiguredColour.POLYPOINT.getDefault();
+			case "ellipsoidGridColor" -> ConfiguredColour.ELLIPSOIDGRID.getDefault();
+			case "ellipsoidPointColor" -> ConfiguredColour.ELLIPSOIDCENTRE.getDefault();
+			case "cylinderGridColor" -> ConfiguredColour.CYLINDERGRID.getDefault();
+			case "cylinderEdgeColor" -> ConfiguredColour.CYLINDERBOX.getDefault();
+			case "cylinderPointColor" -> ConfiguredColour.CYLINDERCENTRE.getDefault();
+			case "chunkBoundaryColour" -> ConfiguredColour.CHUNKBOUNDARY.getDefault();
+			case "chunkGridColour" -> ConfiguredColour.CHUNKGRID.getDefault();
+			default -> null;
+		};
 
-			case "cuboidGridColor": return ConfiguredColour.CUBOIDGRID.getDefault();
-			case "cuboidEdgeColor": return ConfiguredColour.CUBOIDBOX.getDefault();
-			case "cuboidFirstPointColor": return ConfiguredColour.CUBOIDPOINT1.getDefault();
-			case "cuboidSecondPointColor": return ConfiguredColour.CUBOIDPOINT2.getDefault();
-			case "polyGridColor": return ConfiguredColour.POLYGRID.getDefault();
-			case "polyEdgeColor": return ConfiguredColour.POLYBOX.getDefault();
-			case "polyPointColor": return ConfiguredColour.POLYPOINT.getDefault();
-			case "ellipsoidGridColor": return ConfiguredColour.ELLIPSOIDGRID.getDefault();
-			case "ellipsoidPointColor": return ConfiguredColour.ELLIPSOIDCENTRE.getDefault();
-			case "cylinderGridColor": return ConfiguredColour.CYLINDERGRID.getDefault();
-			case "cylinderEdgeColor": return ConfiguredColour.CYLINDERBOX.getDefault();
-			case "cylinderPointColor": return ConfiguredColour.CYLINDERCENTRE.getDefault();
-			case "chunkBoundaryColour": return ConfiguredColour.CHUNKBOUNDARY.getDefault();
-			case "chunkGridColour": return ConfiguredColour.CHUNKGRID.getDefault();
-		}
-
-		return null;
 	}
 
+	public @Nullable Component getTooltip(String text) {
+		String key = getKey(text);
+		if (key == null) return null;
+		if (text.equals("clearAllOnKey")) {
+			return Component.translatable(key + ".tooltip",
+					Component.translatable("key.worldeditcui.clear"),
+					Component.keybind("key.worldeditcui.clear").withStyle(Style.EMPTY.withItalic(true))
+			);
+		}
+		return Component.translatable(key + ".tooltip");
+	}
+	
 	public @Nullable Component getDescription(String text) {
-		switch(text) {
-			case "debugMode": return Component.translatable("worldeditcui.options.debugMode");
-			case "ignoreUpdates": return Component.translatable("worldeditcui.options.ignoreUpdates");
-			case "promiscuous": return Component.translatable("worldeditcui.options.compat.spammy");
-			case "clearAllOnKey": return Component.translatable("worldeditcui.options.extra.clearall");
-
-			case "cuboidGridColor": return Component.translatable("worldeditcui.color.cuboidgrid");
-			case "cuboidEdgeColor": return Component.translatable("worldeditcui.color.cuboidedge");
-			case "cuboidFirstPointColor": return Component.translatable("worldeditcui.color.cuboidpoint1");
-			case "cuboidSecondPointColor": return Component.translatable("worldeditcui.color.cuboidpoint2");
-			case "polyGridColor": return Component.translatable("worldeditcui.color.polygrid");
-			case "polyEdgeColor": return Component.translatable("worldeditcui.color.polyedge");
-			case "polyPointColor": return Component.translatable("worldeditcui.color.polypoint");
-			case "ellipsoidGridColor": return Component.translatable("worldeditcui.color.ellipsoidgrid");
-			case "ellipsoidPointColor": return Component.translatable("worldeditcui.color.ellipsoidpoint");
-			case "cylinderGridColor": return Component.translatable("worldeditcui.color.cylindergrid");
-			case "cylinderEdgeColor": return Component.translatable("worldeditcui.color.cylinderedge");
-			case "cylinderPointColor": return Component.translatable("worldeditcui.color.cylinderpoint");
-			case "chunkBoundaryColour": return Component.translatable("worldeditcui.color.chunkboundary");
-			case "chunkGridColour": return Component.translatable("worldeditcui.color.chunkgrid");
-		}
-
-		return null;
+		String key = getKey(text);
+		if (key == null) return null;
+		return Component.translatable(key);
 	}
 
-	public void save()
-	{
-		try(Writer fileWriter = Files.newBufferedWriter(getConfigFile(), StandardCharsets.UTF_8))
-		{
+	private @Nullable String getKey(String text) {
+		return switch (text) {
+			case "debugMode" -> "worldeditcui.options.debugMode";
+			case "promiscuous" -> "worldeditcui.options.compat.spammy";
+			case "clearAllOnKey" -> "worldeditcui.options.extra.clearall";
+			case "cuboidGridColor" -> "worldeditcui.color.cuboidgrid";
+			case "cuboidEdgeColor" -> "worldeditcui.color.cuboidedge";
+			case "cuboidFirstPointColor" -> "worldeditcui.color.cuboidpoint1";
+			case "cuboidSecondPointColor" -> "worldeditcui.color.cuboidpoint2";
+			case "polyGridColor" -> "worldeditcui.color.polygrid";
+			case "polyEdgeColor" -> "worldeditcui.color.polyedge";
+			case "polyPointColor" -> "worldeditcui.color.polypoint";
+			case "ellipsoidGridColor" -> "worldeditcui.color.ellipsoidgrid";
+			case "ellipsoidPointColor" -> "worldeditcui.color.ellipsoidpoint";
+			case "cylinderGridColor" -> "worldeditcui.color.cylindergrid";
+			case "cylinderEdgeColor" -> "worldeditcui.color.cylinderedge";
+			case "cylinderPointColor" -> "worldeditcui.color.cylinderpoint";
+			case "chunkBoundaryColour" -> "worldeditcui.color.chunkboundary";
+			case "chunkGridColour" -> "worldeditcui.color.chunkgrid";
+			default -> null;
+		};
+	}
+
+	public void save() {
+		try (Writer fileWriter = Files.newBufferedWriter(getConfigFile(), StandardCharsets.UTF_8)) {
 			CUIConfiguration.GSON.toJson(this, fileWriter);
 		}
-		catch (Exception ex)
-		{
+		catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}

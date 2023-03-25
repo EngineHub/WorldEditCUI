@@ -8,6 +8,8 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
@@ -41,9 +43,9 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
             maxNameWidth = Math.max(maxNameWidth, minecraft.font.width(configuration.getDescription(key)));
 
             if (value instanceof Boolean) {
-                this.addEntry(new OnOffEntry(this.configuration, key));
+                this.addEntry(new OnOffEntry(key));
             } else if (value instanceof Colour) {
-                this.addEntry(new ColorConfigEntry(this.configuration, key));
+                this.addEntry(new ColorConfigEntry(key));
             } else {
                 LOGGER.warn("WorldEditCUI has option {} with unknown data type {}", key, value == null ? "NULL" : value.getClass().getName());
             }
@@ -63,13 +65,14 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
     public class OnOffEntry extends ConfigEntry {
         private final CycleButton<Boolean> toggleBotton;
 
-        public OnOffEntry(CUIConfiguration config, String tag) {
-            super (config, tag);
-            Boolean value = (Boolean)config.getConfigArray().get(tag);
+        public OnOffEntry(String tag) {
+            super (tag);
+            Boolean value = (Boolean)configuration.getConfigArray().get(tag);
 
-            toggleBotton = CycleButton.onOffBuilder(value).displayOnlyValue().create(0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, name, (press, boolean_) -> {
-                configuration.changeValue(tag, boolean_);
-            });
+            toggleBotton = CycleButton.onOffBuilder(value).displayOnlyValue().create(0, 0,
+                    BUTTON_WIDTH, BUTTON_HEIGHT, configuration.getDescription(tag),
+                    (press, boolean_) -> configuration.changeValue(tag, boolean_)
+            );
         }
 
         @Override
@@ -91,22 +94,26 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
             return ImmutableList.of(this.resetButton, this.toggleBotton);
         }
 
+        @Override
+        protected void updateFromConfig() {
+            this.toggleBotton.setValue((Boolean)configuration.getConfigArray().get(tag));
+        }
     }
 
     public class ColorConfigEntry extends ConfigEntry {
         private final EditBox textField;
 
-        public ColorConfigEntry(CUIConfiguration config, String tag) {
-            super(config, tag);
+        public ColorConfigEntry(String tag) {
+            super(tag);
 
-            Colour cValue = (Colour)config.getConfigArray().get(tag);
+            Colour cValue = (Colour)configuration.getConfigArray().get(tag);
             textField = new EditBox(CUIConfigList.this.minecraft.font, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, Component.literal(cValue.hexString()));
             textField.setMaxLength(9); // # + 8 hex chars
             textField.setValue(cValue.hexString());
             textField.setResponder(updated -> {
                 Colour tested = Colour.parseRgbaOrNull(updated);
                 if (tested != null) {
-                    config.changeValue(tag, tested);
+                    configuration.changeValue(tag, tested);
                 }
             });
             textField.setFormatter((string, integer) -> {
@@ -139,28 +146,46 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
             return ImmutableList.of(this.resetButton, this.textField);
         }
 
+        @Override
+        protected void updateFromConfig() {
+            this.textField.setValue(((Colour)configuration.getConfigArray().get(tag)).hexString());
+        }
     }
 
     public abstract class ConfigEntry extends ContainerObjectSelectionList.Entry<ConfigEntry> {
-        protected final Component name;
+        protected final String tag;
         protected final Button resetButton;
+        protected final StringWidget textField;
 
-        public ConfigEntry(CUIConfiguration config, String tag) {
-            this.name = config.getDescription(tag);
+        public ConfigEntry(String tag) {
+            this.tag = tag;
 
-            this.resetButton = Button.builder(Component.translatable("controls.reset"), (button) ->
-                    config.changeValue(tag, config.getDefaultValue(tag))
-            ).bounds(0, 0, 50, BUTTON_HEIGHT).build();
+            this.resetButton = Button.builder(Component.translatable("controls.reset"), (button) -> {
+                configuration.changeValue(tag, configuration.getDefaultValue(tag));
+                updateFromConfig();
+            }).bounds(0, 0, 50, BUTTON_HEIGHT).build();
+
+            textField = new StringWidget(configuration.getDescription(tag), minecraft.font);
+            textField.alignLeft();
+            Component tooltip = configuration.getTooltip(tag);
+            if (tooltip != null) {
+                textField.setTooltip(Tooltip.create(tooltip));
+            }
 
         }
         @Override
         public void render(PoseStack poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            int y = top + height / 2;
-            float textLeft = (float)(left + 90 - maxNameWidth);
-            minecraft.font.draw(poseStack, this.name, textLeft, (float)(y - 9 / 2), 0xFFFFFF);
+            int textLeft = left + 90 - maxNameWidth;
+
+            this.textField.setX(textLeft);
+            this.textField.setY(top);
+            this.textField.render(poseStack, mouseX, mouseY, partialTick);
+
             this.resetButton.setX(left + 190);
             this.resetButton.setY(top);
             this.resetButton.render(poseStack, mouseX, mouseY, partialTick);
         }
+
+        protected abstract void updateFromConfig();
     }
 }
