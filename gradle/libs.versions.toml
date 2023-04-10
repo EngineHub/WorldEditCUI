@@ -4,22 +4,22 @@ version = "1.0"
 [versions]
 minecraft = "1.19.4"
 fabricLoader = "0.14.17"
-fabricApi = "0.76.0+1.19.4"
+fabricApi = "0.77.0+1.19.4"
 modmenu = "6.1.0-rc.4"
 multiconnect = "1.5.10"
 quiltflower = "1.9.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-parchment = { module = "org.parchmentmc.data:parchment-1.19.3", version = "2023.02.05" }
+parchment = { module = "org.parchmentmc.data:parchment-1.19.3", version = "2023.03.12" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 multiconnect-api = { module = "net.earthcomputer.multiconnect:multiconnect-api", version.ref = "multiconnect" }
-worldedit = { module = "com.sk89q.worldedit:worldedit-fabric-mc1.19.3", version = "7.2.13" }
+worldedit = { module = "com.sk89q.worldedit:worldedit-fabric-mc1.19.4", version = "7.2.14" }
 
 [plugins]
-loom = { id = "fabric-loom", version = "1.1.9" }
+loom = { id = "fabric-loom", version = "1.1.12" }
 loomQuiltflower = { id = "io.github.juuxel.loom-quiltflower", version = "1.8.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.44.0" }
 javaEcosystemCapabilities = { id = "org.gradlex.java-ecosystem-capabilities", version = "1.0" }

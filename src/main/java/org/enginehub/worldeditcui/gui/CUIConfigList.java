@@ -3,6 +3,7 @@ package org.enginehub.worldeditcui.gui;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
@@ -27,7 +28,7 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
     private static final int BUTTON_WIDTH = 70;
     private static final int BUTTON_HEIGHT = 20;
     private static final Style invalidFormat = Style.EMPTY
-            .withColor(TextColor.parseColor("dark_red"))
+            .withColor(ChatFormatting.DARK_RED)
             .withUnderlined(true);
 
     private final CUIConfiguration configuration;
@@ -36,6 +37,7 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
     public CUIConfigList(CUIConfigPanel panel, Minecraft minecraft) {
         super(minecraft, panel.width + 45, panel.height, 20, panel.height - 32, 25);
         this.configuration = panel.configuration;
+        this.setRenderBackground(minecraft.level == null);
 
         for (String key : this.configuration.getConfigArray().keySet()) {
             Object value = configuration.getConfigArray().get(key);
@@ -117,14 +119,30 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
                 }
             });
             textField.setFormatter((string, integer) -> {
-                if (string.length() != 9) {
+                final String colorSource = textField.getValue();
+                if (colorSource.length() != 9) {
                     return FormattedCharSequence.forward(string, invalidFormat);
                 }
-                TextColor parsed = TextColor.parseColor(string.substring(0, 7));
+                TextColor parsed = TextColor.parseColor(colorSource.substring(0, 7));
                 if (parsed == null) {
                     return FormattedCharSequence.forward(string, invalidFormat);
                 }
                 return FormattedCharSequence.forward(string, Style.EMPTY.withColor(parsed));
+            });
+            textField.setFilter(value -> {
+                // filter for #AARRGGBB
+                if (value.length() >= 1 && value.charAt(0) != '#') { // does not start with hex
+                    return false;
+                }
+
+                for (int i = 1; i < value.length(); i++) { // any characters that are not valid in a hex string
+                    final char c = value.charAt(i);
+                    if ((c < '0' || c > '9') && (c < 'A' || c > 'F') && (c < 'a' || c > 'f')) {
+                        return false;
+                    }
+                }
+
+                return true;
             });
         }
 

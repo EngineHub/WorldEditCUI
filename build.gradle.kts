@@ -136,13 +136,13 @@ dependencies {
     }
 
     // for development
-    /*modLocalRuntime(libs.worldedit) {
+    modLocalRuntime(libs.worldedit) {
         exclude("com.google.guava", "guava")
         exclude("com.google.code.gson", "gson")
         exclude("com.google.code.gson", "gson")
         exclude("it.unimi.dsi", "fastutil")
         exclude("org.apache.logging.log4j", "log4j-api")
-    }*/
+    }
 }
 
 configurations.modLocalRuntime {
