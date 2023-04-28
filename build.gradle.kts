@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "org.enginehub.worldeditcui"
-version = "${libs.versions.minecraft.get()}+02-SNAPSHOT"
+version = "${libs.versions.minecraft.get()}+01-SNAPSHOT"
 
 repositories {
     // mirrors:
@@ -136,13 +136,13 @@ dependencies {
     }
 
     // for development
-    modLocalRuntime(libs.worldedit) {
+    /*modLocalRuntime(libs.worldedit) {
         exclude("com.google.guava", "guava")
         exclude("com.google.code.gson", "gson")
         exclude("com.google.code.gson", "gson")
         exclude("it.unimi.dsi", "fastutil")
         exclude("org.apache.logging.log4j", "log4j-api")
-    }
+    }*/
 }
 
 configurations.modLocalRuntime {

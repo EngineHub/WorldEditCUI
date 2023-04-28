@@ -1,10 +1,10 @@
 package org.enginehub.worldeditcui.gui;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
@@ -78,12 +78,12 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
         }
 
         @Override
-        public void render(PoseStack poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            super.render(poseStack, index, top, left, width, height, mouseX, mouseY, isMouseOver, partialTick);
+        public void render(GuiGraphics gfx, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+            super.render(gfx, index, top, left, width, height, mouseX, mouseY, isMouseOver, partialTick);
 
             this.toggleBotton.setX(left + 105);
             this.toggleBotton.setY(top);
-            this.toggleBotton.render(poseStack, mouseX, mouseY, partialTick);
+            this.toggleBotton.render(gfx, mouseX, mouseY, partialTick);
         }
 
         @Override
@@ -147,11 +147,11 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
         }
 
         @Override
-        public void render(PoseStack poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            super.render(poseStack, index, top, left, width, height, mouseX, mouseY, isMouseOver, partialTick);
+        public void render(GuiGraphics gfx, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+            super.render(gfx, index, top, left, width, height, mouseX, mouseY, isMouseOver, partialTick);
             this.textField.setX(left + 105);
             this.textField.setY(top);
-            this.textField.render(poseStack, mouseX, mouseY, partialTick);
+            this.textField.render(gfx, mouseX, mouseY, partialTick);
         }
 
         @Override
@@ -192,7 +192,7 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
 
         }
         @Override
-        public void render(PoseStack poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+        public void render(GuiGraphics poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
             int textLeft = left + 90 - maxNameWidth;
 
             this.textField.setX(textLeft);

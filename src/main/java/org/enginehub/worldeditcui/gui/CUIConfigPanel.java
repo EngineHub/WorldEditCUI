@@ -1,14 +1,12 @@
 package org.enginehub.worldeditcui.gui;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.logging.LogUtils;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
-import org.slf4j.Logger;
 
 /**
  * @author Mark Vainomaa
@@ -46,13 +44,13 @@ public class CUIConfigPanel extends Screen {
     }
 
     @Override
-    public void render(PoseStack poseStack, int mouseX, int mouseY, float delta) {
-        this.renderBackground(poseStack);
+    public void render(GuiGraphics gfx, int mouseX, int mouseY, float delta) {
+        this.renderBackground(gfx);
 
-        this.configList.render(poseStack, mouseX, mouseY, delta);
-        drawCenteredString(poseStack, this.font, screenTitle, this.width / 2, 8, 0xFFFFFF);
+        this.configList.render(gfx, mouseX, mouseY, delta);
+        gfx.drawCenteredString(this.font, screenTitle, this.width / 2, 8, 0xFFFFFF);
 
-        this.done.render(poseStack, mouseX, mouseY, delta);
-        super.render(poseStack, mouseX, mouseY, delta);
+        this.done.render(gfx, mouseX, mouseY, delta);
+        super.render(gfx, mouseX, mouseY, delta);
     }
 }
