@@ -19,7 +19,8 @@ multiconnect-api = { module = "net.earthcomputer.multiconnect:multiconnect-api",
 worldedit = { module = "com.sk89q.worldedit:worldedit-fabric-mc1.20", version = "7.2.15" }
 
 [plugins]
+curseForgeGradle = { id = "net.darkhax.curseforgegradle", version = "1.0.14" }
+javaEcosystemCapabilities = { id = "org.gradlex.java-ecosystem-capabilities", version = "1.2" }
 loom = { id = "fabric-loom", version = "1.2.7" }
 loomQuiltflower = { id = "io.github.juuxel.loom-quiltflower", version = "1.10.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.44.0" }
-javaEcosystemCapabilities = { id = "org.gradlex.java-ecosystem-capabilities", version = "1.2" }

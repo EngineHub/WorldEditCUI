@@ -1,3 +1,5 @@
+import net.darkhax.curseforgegradle.Constants
+import net.darkhax.curseforgegradle.TaskPublishCurseForge
 import net.fabricmc.loom.LoomGradleExtension
 
 plugins {
@@ -6,6 +8,7 @@ plugins {
     alias(libs.plugins.loomQuiltflower)
     alias(libs.plugins.versions)
     alias(libs.plugins.javaEcosystemCapabilities)
+    alias(libs.plugins.curseForgeGradle)
 }
 
 group = "org.enginehub.worldeditcui"
@@ -204,6 +207,35 @@ tasks {
 
         filesMatching("fabric.mod.json") {
             expand("version" to project.version)
+        }
+    }
+
+    register("publishToCurseForge", TaskPublishCurseForge::class) {
+        val cfApiToken: String by project
+        val cfProjectId: String by project
+        val changelogFile = project.findProperty("changelog")
+        val version = project.provider { project.version }
+
+        doFirst {
+            if (version.get().toString().contains("SNAPSHOT")) {
+                throw InvalidUserDataException("SNAPSHOT versions of WorldEditCUI cannot be published to CurseForge")
+            }
+            if (changelogFile == null || !file(changelogFile).isFile) {
+                throw InvalidUserDataException("A file with changelog text must be provided using the 'changelog' Gradle property")
+            }
+        }
+
+        apiToken = cfApiToken
+
+        with(upload(cfProjectId, jar)) {
+            releaseType = Constants.RELEASE_TYPE_RELEASE
+            changelog = changelogFile?.let(::file)
+            // Rendering plugins
+            addOptional("canvas-renderer", "sodium", "irisshaders")
+            // Config screens, version compatibility
+            addOptional("modmenu", "multiconnect", "worldedit")
+            addJavaVersion("Java 17")
+            addGameVersion(libs.versions.minecraft.get())
         }
     }
 }
