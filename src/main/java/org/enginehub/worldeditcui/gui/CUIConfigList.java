@@ -192,16 +192,16 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
 
         }
         @Override
-        public void render(GuiGraphics poseStack, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+        public void render(GuiGraphics gfx, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
             int textLeft = left + 90 - maxNameWidth;
 
             this.textField.setX(textLeft);
             this.textField.setY(top);
-            this.textField.render(poseStack, mouseX, mouseY, partialTick);
+            this.textField.render(gfx, mouseX, mouseY, partialTick);
 
             this.resetButton.setX(left + 190);
             this.resetButton.setY(top);
-            this.resetButton.render(poseStack, mouseX, mouseY, partialTick);
+            this.resetButton.render(gfx, mouseX, mouseY, partialTick);
         }
 
         protected abstract void updateFromConfig();
