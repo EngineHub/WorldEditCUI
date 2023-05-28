@@ -1,5 +1,3 @@
-rootProject.name = "WorldEditCUI"
-
 pluginManagement {
     repositories {
         // mirrors:
@@ -19,6 +17,14 @@ pluginManagement {
     }
 }
 
-includeBuild("build-logic") {
-    name = "worldeditcui-build-logic"
+rootProject.name = "worldeditcui-build-logic"
+
+dependencyResolutionManagement {
+    repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+    pluginManagement.repositories.forEach(repositories::add)
+    versionCatalogs {
+        register(defaultLibrariesExtensionName.get()) {
+            from(files("../gradle/libs.versions.toml"))
+        }
+    }
 }

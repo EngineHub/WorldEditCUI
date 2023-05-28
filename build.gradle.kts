@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.versions)
     alias(libs.plugins.javaEcosystemCapabilities)
     alias(libs.plugins.curseForgeGradle)
+    id("org.enginehub.worldeditcui.ghrelease")
 }
 
 group = "org.enginehub.worldeditcui"
@@ -210,11 +211,13 @@ tasks {
         }
     }
 
-    register("publishToCurseForge", TaskPublishCurseForge::class) {
+    val publishToCurseForge by registering(TaskPublishCurseForge::class) {
         val cfApiToken: String by project
         val cfProjectId: String by project
         val changelogFile = project.findProperty("changelog")
         val version = project.provider { project.version }
+
+        onlyIf { indraGit.headTag() != null }
 
         doFirst {
             if (version.get().toString().contains("SNAPSHOT")) {
@@ -227,7 +230,7 @@ tasks {
 
         apiToken = cfApiToken
 
-        with(upload(cfProjectId, jar)) {
+        with(upload(cfProjectId, remapJar)) {
             releaseType = Constants.RELEASE_TYPE_RELEASE
             changelog = changelogFile?.let(::file)
             // Rendering plugins
@@ -238,4 +241,25 @@ tasks {
             addGameVersion(libs.versions.minecraft.get())
         }
     }
+
+    register("publishRelease") {
+        group = PublishingPlugin.PUBLISH_TASK_GROUP
+        dependsOn(publishToCurseForge, publishToGitHub)
+    }
+
+    publishToGitHub {
+        onlyIf { indraGit.headTag() != null }
+    }
+}
+
+githubRelease {
+    val changelogFile = project.findProperty("changelog")
+    apiToken = providers.gradleProperty("githubToken")
+            .orElse(providers.environmentVariable("GITHUB_TOKEN"))
+
+    // tag is inferred from the head tag
+    repository = "EngineHub/WorldEditCUI"
+    releaseName = "WorldEditCUI v$version"
+    releaseBody = project.provider { changelogFile?.let(::file)?.readText(Charsets.UTF_8) }
+    artifacts.from(tasks.remapJar)
 }
