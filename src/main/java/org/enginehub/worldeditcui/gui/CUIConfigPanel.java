@@ -45,7 +45,7 @@ public class CUIConfigPanel extends Screen {
 
     @Override
     public void render(GuiGraphics gfx, int mouseX, int mouseY, float delta) {
-        this.renderBackground(gfx);
+        this.renderBackground(gfx, mouseX, mouseY, delta);
 
         this.configList.render(gfx, mouseX, mouseY, delta);
         gfx.drawCenteredString(this.font, screenTitle, this.width / 2, 8, 0xFFFFFF);
