@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "org.enginehub.worldeditcui"
-version = "${libs.versions.minecraft.get()}+02-SNAPSHOT"
+version = "${libs.versions.minecraft.get()}+01-SNAPSHOT"
 
 repositories {
     // mirrors:
