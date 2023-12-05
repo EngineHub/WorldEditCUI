@@ -3,10 +3,10 @@ format = { version = "1.1" }
 
 [versions]
 indra = "3.1.3"
-minecraft = "1.20.3-pre2"
-fabricLoader = "0.14.24"
-fabricApi = "0.90.11+1.20.3"
-modmenu = "9.0.0-alpha.3"
+minecraft = "1.20.3"
+fabricLoader = "0.15.0"
+fabricApi = "0.91.1+1.20.3"
+modmenu = "9.0.0-pre.1"
 multiconnect = "1.5.10"
 viafabricplus = "2.9.0"
 vineflower = "1.9.3"
