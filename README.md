@@ -1,7 +1,9 @@
+<!-- modrinth_exclude.start -->
 WorldEditCUI
 ------------
 
 [![Actions Status](https://github.com/EngineHub/WorldEditCUI/actions/workflows/build.yml/badge.svg)](https://github.com/EngineHub/WorldEditCUI/actions/workflows/build.yml)
+<!-- modrinth_exclude.end -->
 
 A graphical user interface for [WorldEdit]. WorldEditCUI is designed
 to assist in using WorldEdit, as well as preventing accidental errors.
@@ -45,7 +47,7 @@ Credits
 Legal stuff
 -----------
 
-This code is licensed under the [Eclipse Public License v1].
+The code for WorldEditCUI (and therefore the compiled mod) is licensed under the [Eclipse Public License v1].
 
 [WorldEdit]: https://enginehub.org/worldedit/
 [Eclipse Public License v1]: https://www.eclipse.org/org/documents/epl-v10.php

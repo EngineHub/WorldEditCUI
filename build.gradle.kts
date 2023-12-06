@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.versions)
     alias(libs.plugins.javaEcosystemCapabilities)
     alias(libs.plugins.curseForgeGradle)
+    alias(libs.plugins.minotaur)
     alias(libs.plugins.publishGithubRelease)
 }
 
@@ -158,7 +159,11 @@ configurations.modLocalRuntime {
 tasks {
     register("generateStandaloneRun") {
         description = "Generate a script that will run WorldEdit CUI, for graphics debugging"
-        val scriptDest = project.layout.buildDirectory.file(if (System.getProperty("os.name").contains("windows", ignoreCase = true)) { "run-dev.bat" } else { "run-dev" })
+        val scriptDest = project.layout.buildDirectory.file(if (System.getProperty("os.name").contains("windows", ignoreCase = true)) {
+            "run-dev.bat"
+        } else {
+            "run-dev"
+        })
         val argsDest = project.layout.buildDirectory.file("run-dev-args.txt")
         val taskClasspath = project.files(jar.map { it.outputs }, configurations.runtimeClasspath)
         val toolchain = project.javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(targetVersion) }
@@ -212,30 +217,78 @@ tasks {
             expand("version" to project.version)
         }
     }
+}
 
-    val publishToCurseForge by registering(TaskPublishCurseForge::class) {
-        val cfApiToken: String by project
-        val cfProjectId: String by project
-        val changelogFile = project.findProperty("changelog")
-        val version = project.provider { project.version }
+// Releasing
+val changelogContents = objects.property(String::class)
+changelogContents.set(providers.gradleProperty("changelog")
+        .map { file(it) }
+        .filter { it.exists() }
+        .map { it.readText(Charsets.UTF_8) })
+changelogContents.finalizeValueOnRead()
+val versionName = project.provider { project.version }
 
-        onlyIf { indraGit.headTag() != null }
+val cfApiToken = providers.gradleProperty("cfApiToken")
+val modrinthToken = providers.gradleProperty("modrinthToken")
+        .orElse(providers.environmentVariable("MODRINTH_TOKEN"))
+val githubToken = providers.gradleProperty("githubToken")
+        .orElse(providers.environmentVariable("GITHUB_TOKEN"))
 
-        doFirst {
-            if (version.get().toString().contains("SNAPSHOT")) {
-                throw InvalidUserDataException("SNAPSHOT versions of WorldEditCUI cannot be published to CurseForge")
+tasks {
+    val validateRelease by registering {
+        inputs.property("changelog", changelogContents).optional(true)
+        inputs.property("version", versionName)
+
+        doLast {
+            val problems = mutableListOf<String>()
+            // General release-readiness
+            if (indraGit.headTag() == null) {
+                problems.add("Tried to perform a release without being checked out to a tag")
             }
-            if (changelogFile == null || !file(changelogFile).isFile) {
-                throw InvalidUserDataException("A file with changelog text must be provided using the 'changelog' Gradle property")
+            if (versionName.get().toString().contains("SNAPSHOT")) {
+                problems.add("SNAPSHOT versions of WorldEditCUI cannot be published")
+            }
+            if (!changelogContents.isPresent) {
+                problems.add("A file with changelog text must be provided using the 'changelog' Gradle property")
+            }
+
+            // CF
+            if (!cfApiToken.isPresent) {
+                problems.add("No CurseForge API token was set with the 'cfApiToken' Gradle property")
+            }
+
+            // MR
+            if (!modrinthToken.isPresent) {
+                problems.add("No Modrinth access token was set with either the 'modrinthToken' Gradle property, or 'MODRINTH_TOKEN' environment variable")
+            }
+
+            // GH
+            if (!githubToken.isPresent) {
+                problems.add("No GitHub access token was set with either the 'githubToken' Gradle property, or 'GITHUB_TOKEN' environment variable")
+            }
+
+            when (problems.size) {
+                0 -> return@doLast
+                1 -> {
+                    throw InvalidUserDataException(problems[0])
+                }
+                else -> throw InvalidUserDataException(
+                    "WorldEditCUI detected the following problems when trying to perform a release:\n\n"
+                        + problems.joinToString("\n - ", prefix = " - ")
+                )
             }
         }
+    }
 
-        apiToken = cfApiToken
+    val publishToCurseForge by registering(TaskPublishCurseForge::class) {
+        val cfProjectId = providers.gradleProperty("cfProjectId")
 
-        with(upload(cfProjectId, remapJar)) {
+        apiToken = cfApiToken.get()
+
+        with(upload(cfProjectId.get(), remapJar)) {
             displayName = project.version
             releaseType = Constants.RELEASE_TYPE_RELEASE
-            changelog = changelogFile?.let(::file)
+            changelog = changelogContents.get()
             // Rendering plugins
             addOptional("canvas-renderer", "sodium", "irisshaders")
             // Config screens, version compatibility
@@ -245,26 +298,42 @@ tasks {
         }
     }
 
-    register("publishRelease") {
-        group = PublishingPlugin.PUBLISH_TASK_GROUP
-        dependsOn(publishToCurseForge, publishToGitHub)
+    val releaseTasks = listOf(publishToCurseForge, publishToGitHub, modrinth)
+    releaseTasks.forEach {
+        it.configure { dependsOn(validateRelease) }
     }
 
-    publishToGitHub {
-        onlyIf { indraGit.headTag() != null }
+    register("publishRelease") {
+        group = PublishingPlugin.PUBLISH_TASK_GROUP
+        dependsOn(releaseTasks)
+    }
+}
+
+modrinth {
+    token = modrinthToken
+    projectId = "worldeditcui"
+    syncBodyFrom = providers.provider { file("README.md").readText(Charsets.UTF_8) }
+    uploadFile.set(tasks.remapJar)
+    gameVersions.add(libs.versions.minecraft.get())
+    changelog = changelogContents
+    dependencies {
+        optional.project("canvas")
+        optional.project("sodium")
+        optional.project("iris")
+        // Config screens, version compatibility
+        optional.project("modmenu")
+        optional.project("viafabricplus")
+        optional.project("worldedit")
     }
 }
 
 githubRelease {
-    val changelogFile = project.findProperty("changelog")
-    apiToken = providers.gradleProperty("githubToken")
-            .orElse(providers.environmentVariable("GITHUB_TOKEN"))
-
+    apiToken = githubToken
     tagName = project.provider {
         indraGit.headTag()?.run { org.eclipse.jgit.lib.Repository.shortenRefName(name) }
     }
     repository = "EngineHub/WorldEditCUI"
     releaseName = "WorldEditCUI v$version"
-    releaseBody = project.provider { changelogFile?.let(::file)?.readText(Charsets.UTF_8) }
+    releaseBody = changelogContents
     artifacts.from(tasks.remapJar)
 }
