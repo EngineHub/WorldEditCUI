@@ -11,15 +11,18 @@ to assist in using WorldEdit, as well as preventing accidental errors.
 Please note that this is not [WorldEdit], which allows you to make changes
 to your world, but WorldEditCUI, a frontend for WorldEdit. You must have
 WorldEdit installed on your server.
+
+This version of the mod is for Fabric, but a [LiteLoader](https://www.curseforge.com/minecraft/mc-mods/worldeditcui) version is also available.
  
 Installation
 ------------
 
 1. Install [Fabric](https://fabricmc.net/use)
-2. Install [this mod](https://www.curseforge.com/minecraft/mc-mods/worldeditcui-fabric) into Minecraft mods folder
+2. Install [this mod](https://modrinth.com/mod/worldedit-cui) into Minecraft mods folder
 
-WorldEdit selections will be shown without any configuration necessary, but the colours used are configurable as long as [Mod Menu](https://www.curseforge.com/minecraft/mc-mods/modmenu) is installed.
+WorldEdit selections will be shown without any configuration necessary, but the colours used are configurable when [Mod Menu](https://modrinth.com/mod/modmenu) is installed.
 
+<!-- modrinth_exclude.start -->
 Compiling
 ---------
 
@@ -27,14 +30,17 @@ Run `./gradlew build`
 
 To import the project into your IDE, see [FabricMC Wiki article](https://fabricmc.net/wiki/tutorial:setup) and start from **Step 3**.
 
+<!-- modrinth_exclude.end -->
 Misc
 ----
 
-You can subscribe to updates either by watching this repository, or by [joining the EngineHub Discord guild](https://discord.gg/enginehub). Support questions
+You can subscribe to updates either by watching this project, or by [joining the EngineHub Discord guild](https://discord.gg/enginehub). Support questions
 belong in the `#worldedit-cui` channel.
 
+<!-- modrinth_exclude.start -->
 ### Wait, EngineHub owns this repository now?
 Yes, the original owner [@mikroskeem](https://github.com/mikroskeem) agreed to move it under our ownership.
+<!-- modrinth_exclude.end -->
 
 Credits
 -------

@@ -288,7 +288,7 @@ tasks {
         with(upload(cfProjectId.get(), remapJar)) {
             displayName = project.version
             releaseType = Constants.RELEASE_TYPE_RELEASE
-            changelog = changelogContents.get()
+            changelog = changelogContents.getOrElse("")
             // Rendering plugins
             addOptional("canvas-renderer", "sodium", "irisshaders")
             // Config screens, version compatibility
@@ -311,7 +311,7 @@ tasks {
 
 modrinth {
     token = modrinthToken
-    projectId = "worldeditcui"
+    projectId = "worldedit-cui"
     syncBodyFrom = providers.provider { file("README.md").readText(Charsets.UTF_8) }
     uploadFile.set(tasks.remapJar)
     gameVersions.add(libs.versions.minecraft.get())
