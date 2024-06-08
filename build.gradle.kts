@@ -5,12 +5,14 @@ import net.fabricmc.loom.LoomGradleExtension
 plugins {
     java
     alias(libs.plugins.indra.git)
+    alias(libs.plugins.indra.spotlessLicenser)
     alias(libs.plugins.loom)
     alias(libs.plugins.versions)
     alias(libs.plugins.javaEcosystemCapabilities)
     alias(libs.plugins.curseForgeGradle)
     alias(libs.plugins.minotaur)
     alias(libs.plugins.publishGithubRelease)
+    alias(libs.plugins.spotless)
 }
 
 group = "org.enginehub.worldeditcui"
@@ -46,6 +48,10 @@ tasks.withType(JavaCompile::class).configureEach {
     options.release = targetVersion
     options.encoding = "UTF-8"
     options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing"))
+}
+
+indraSpotlessLicenser {
+    licenseHeaderFile(rootProject.file("HEADER"))
 }
 
 loom {

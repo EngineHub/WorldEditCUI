@@ -16,7 +16,7 @@
     "sources": "https://github.com/EngineHub/WorldEditCUI"
   },
   "icon": "assets/worldeditcui/icon.png",
-  "license": "EPL-1.0",
+  "license": "EPL-2.0",
   "environment": "client",
   "entrypoints": {
     "main": [
