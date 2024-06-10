@@ -72,6 +72,7 @@ loom {
     decompilerOptions.named("vineflower") {
         options.put("win", "0")
     }
+    silentMojangMappingsLicense()
 }
 
 // Ugly hack for easy genSourcening

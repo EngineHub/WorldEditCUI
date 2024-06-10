@@ -26,7 +26,7 @@ curseForgeGradle = { id = "net.darkhax.curseforgegradle", version = "1.1.18" }
 indra-git = { id = "net.kyori.indra.git", version.ref = "indra" }
 indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 javaEcosystemCapabilities = { id = "org.gradlex.java-ecosystem-capabilities", version = "1.5.2" }
-loom = { id = "fabric-loom", version = "1.6.11" }
+loom = { id = "dev.architectury.loom", version = "1.6.397" }
 minotaur = { id = "com.modrinth.minotaur", version = "2.8.7" }
 publishGithubRelease = { id = "ca.stellardrift.publish-github-release", version = "0.1.0" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
