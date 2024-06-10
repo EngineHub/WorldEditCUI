@@ -29,7 +29,7 @@ dependency-reduced-pom.xml
 */build/
 
 # Fabric stuff
-/run/
+/*/run/
 
 # OS X quirks
 .DS_Store

@@ -18,3 +18,12 @@ pluginManagement {
         // gradlePluginPortal()
     }
 }
+
+sequenceOf(
+    "fabric",
+    "protocol-common",
+    "protocol-fabric",
+    "protocol-neoforge",
+).forEach {
+    include("worldeditcui-$it")
+}
