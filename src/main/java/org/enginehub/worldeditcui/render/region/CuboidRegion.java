@@ -81,7 +81,7 @@ public class CuboidRegion extends Region
 	{
 		if (id < 2)
 		{
-			this.points[id] = new PointCube(x, y, z).setStyle(this.styles[id+2]);
+			this.points[id] = PointCube.pointCube(x, y, z).setStyle(this.styles[id+2]);
 		}
 		
 		this.updateBounds();
@@ -92,7 +92,7 @@ public class CuboidRegion extends Region
 	{
 		if (id < 2)
 		{
-			this.points[id] = new PointCubeTracking(entity, traceDistance).setStyle(this.styles[id+2]);
+			this.points[id] = PointCubeTracking.pointCubeTracking(entity, traceDistance).setStyle(this.styles[id+2]);
 		}
 		
 		this.updateBounds();
@@ -102,9 +102,9 @@ public class CuboidRegion extends Region
 	{
 		if (this.points[0] != null && this.points[1] != null)
 		{
-			BoundingBox bounds = new BoundingBox(this.points[0], this.points[1]);
-			this.grid = new Render3DGrid(this.styles[1], bounds).setSpacing(this.spacing);
-			this.box = new Render3DBox(this.styles[0], bounds);
+			BoundingBox bounds = BoundingBox.boundingBox(this.points[0], this.points[1]);
+			this.grid = Render3DGrid.region3dGrid(this.styles[1], bounds).setSpacing(this.spacing);
+			this.box = Render3DBox.region3dBox(this.styles[0], bounds);
 		}
 	}
 	

@@ -43,24 +43,29 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
     private final CUIConfiguration configuration;
     int maxNameWidth = 0;
 
-    public CUIConfigList(CUIConfigPanel panel, Minecraft minecraft) {
-        super(minecraft, panel.width + 45, panel.height - 60, 25, 25);
-        this.configuration = panel.configuration;
-        this.setRenderBackground(minecraft.level == null);
+    public static CUIConfigList create(final CUIConfigPanel panel, final Minecraft mc) {
+        final CUIConfigList list = new CUIConfigList(panel, mc);
 
-        for (String key : this.configuration.getConfigArray().keySet()) {
-            Object value = configuration.getConfigArray().get(key);
+        for (String key : list.configuration.getConfigArray().keySet()) {
+            Object value = list.configuration.getConfigArray().get(key);
 
-            maxNameWidth = Math.max(maxNameWidth, minecraft.font.width(configuration.getDescription(key)));
+            list.maxNameWidth = Math.max(list.maxNameWidth, mc.font.width(list.configuration.getDescription(key)));
 
             if (value instanceof Boolean) {
-                this.addEntry(new OnOffEntry(key));
+                list.addEntry(list.new OnOffEntry(key));
             } else if (value instanceof Colour) {
-                this.addEntry(new ColorConfigEntry(key));
+                list.addEntry(list.new ColorConfigEntry(key));
             } else {
                 LOGGER.warn("WorldEditCUI has option {} with unknown data type {}", key, value == null ? "NULL" : value.getClass().getName());
             }
         }
+
+        return list;
+    }
+
+    private CUIConfigList(CUIConfigPanel panel, Minecraft minecraft) {
+        super(minecraft, panel.width + 45, panel.height - 60, 25, 25);
+        this.configuration = panel.configuration;
     }
 
     @Override
@@ -134,13 +139,12 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
                 }
                 return TextColor.parseColor(colorSource.substring(0, 7))
                     .map(color -> FormattedCharSequence.forward(string, Style.EMPTY.withColor(color)))
-                    .get()
-                    .left()
+                    .result()
                     .orElseGet(() -> FormattedCharSequence.forward(string, invalidFormat));
             });
             textField.setFilter(value -> {
                 // filter for #AARRGGBB
-                if (value.length() >= 1 && value.charAt(0) != '#') { // does not start with hex
+                if (!value.isEmpty() && value.charAt(0) != '#') { // does not start with hex
                     return false;
                 }
 
@@ -198,8 +202,8 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
             if (tooltip != null) {
                 textField.setTooltip(Tooltip.create(tooltip));
             }
-
         }
+
         @Override
         public void render(GuiGraphics gfx, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
             int textLeft = left + 90 - maxNameWidth;

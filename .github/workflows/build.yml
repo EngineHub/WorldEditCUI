@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
   
 env:
-  RUNTIME_VERSION: 17
+  RUNTIME_VERSION: 21
 
 jobs:
   build:
@@ -20,23 +20,24 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: checkout repository
-        uses: actions/checkout@v3
-      - name: validate gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      - name: setup jdk ${{ env.RUNTIME_VERSION }}
-        uses: actions/setup-java@v3
+      - name: setup / checkout repository
+        uses: actions/checkout@v4
+      - name: setup / validate gradle wrapper
+        uses: gradle/actions/wrapper-validation@v3
+      - name: setup / jdk ${{ env.RUNTIME_VERSION }}
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: ${{ env.RUNTIME_VERSION }}
-      - name: run gradle build
-        uses: gradle/gradle-build-action@v2
+      - name: setup / gradle
+        uses: gradle/actions/setup-gradle@v3
         with:
           cache-read-only: ${{ !(startsWith(github.ref, 'refs/heads/mc/') || github.ref == 'refs/heads/master') || github.event_name == 'pull_request' }}
-          arguments: build
+      - name: run gradle build
+        run: ./gradlew build
       - name: capture build artifacts
         if: ${{ runner.os == 'Linux' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Artifacts
           path: build/libs/

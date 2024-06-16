@@ -12,6 +12,8 @@ package org.enginehub.worldeditcui.event;
 import com.google.common.base.Joiner;
 import org.enginehub.worldeditcui.WorldEditCUI;
 
+import java.util.List;
+
 /**
  * Base event for CUI events, handles parameter validation and running the logic
  * 
@@ -21,7 +23,7 @@ import org.enginehub.worldeditcui.WorldEditCUI;
 public abstract class CUIEvent
 {
 	protected final WorldEditCUI controller;
-	protected final String[] params;
+	protected final List<String> params;
 	protected final boolean multi;
 	
 	public CUIEvent(CUIEventArgs args)
@@ -51,14 +53,14 @@ public abstract class CUIEvent
 		
 		if (max == min)
 		{
-			if (this.params.length != max)
+			if (this.params.size() != max)
 			{
 				return false;
 			}
 		}
 		else
 		{
-			if (this.params.length > max || this.params.length < min)
+			if (this.params.size() > max || this.params.size() < min)
 			{
 				return false;
 			}
@@ -77,7 +79,7 @@ public abstract class CUIEvent
 		
 		if (!this.isValid())
 		{
-			String message = String.format("Invalid number of parameters. %s event requires %s parameters but received %s [%s]", this.getEventName(), this.getRequiredParameterString(), this.params.length, Joiner.on(", ").join(this.params));
+			String message = String.format("Invalid number of parameters. %s event requires %s parameters but received %s [%s]", this.getEventName(), this.getRequiredParameterString(), this.params.size(), Joiner.on(", ").join(this.params));
 			throw new IllegalArgumentException(message);
 		}
 	}
@@ -94,16 +96,16 @@ public abstract class CUIEvent
 
 	public int getInt(int index)
 	{
-		return (int)Float.parseFloat(this.params[index]);
+		return (int)Float.parseFloat(this.params.get(index));
 	}
 	
 	public double getDouble(int index)
 	{
-		return Double.parseDouble(this.params[index]);
+		return Double.parseDouble(this.params.get(index));
 	}
 	
 	public String getString(int index)
 	{
-		return this.params[index];
+		return this.params.get(index);
 	}
 }

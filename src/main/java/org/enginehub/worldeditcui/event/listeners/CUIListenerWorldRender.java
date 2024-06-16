@@ -20,6 +20,7 @@ import org.enginehub.worldeditcui.render.LineStyle;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.RenderSink;
 import org.enginehub.worldeditcui.util.Vector3;
+import org.joml.Matrix4fStack;
 import org.lwjgl.opengl.GL32;
 
 import java.util.List;
@@ -95,8 +96,8 @@ public class CUIListenerWorldRender
 			this.ctx.init(new Vector3(this.minecraft.gameRenderer.getMainCamera().getPosition()), partialTicks, sink);
 			final float fogStart = RenderSystem.getShaderFogStart();
 			FogRenderer.setupNoFog();
-			final PoseStack poseStack = RenderSystem.getModelViewStack();
-			poseStack.pushPose();
+			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
+			poseStack.pushMatrix();
 			RenderSystem.disableCull();
 			RenderSystem.enableBlend();
 			// RenderSystem.disableTexture();
@@ -119,7 +120,7 @@ public class CUIListenerWorldRender
 			// RenderSystem.enableTexture();
 			RenderSystem.disableBlend();
 			RenderSystem.enableCull();
-			poseStack.popPose();
+			poseStack.popMatrix();
 			RenderSystem.setShaderFogStart(fogStart);
 			Minecraft.getInstance().getProfiler().pop();
 		} catch (final Exception ex)

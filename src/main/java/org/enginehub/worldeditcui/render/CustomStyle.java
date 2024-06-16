@@ -22,11 +22,17 @@ public class CustomStyle implements RenderStyle
 	private RenderType renderType = RenderType.ANY;
 	private final LineStyle[] lines = new LineStyle[2];
 
-	public CustomStyle(Colour colour)
+	public static CustomStyle customStyle(final Colour colour)
 	{
-		this.setColour(colour);
+		final var ret = new CustomStyle(colour);
+		ret.updateLines();
+		return ret;
 	}
-	
+
+	private CustomStyle(final Colour colour) {
+		this.colour = colour;
+	}
+
 	@Override
 	public void setRenderType(RenderType renderType)
 	{
@@ -43,21 +49,26 @@ public class CustomStyle implements RenderStyle
 	public void setColour(Colour colour)
 	{
 		this.colour = colour;
+		this.updateLines();
+	}
+
+	private void updateLines() {
+		final Colour colour = this.colour;
 		this.lines[0] = new LineStyle(
-			 RenderType.HIDDEN,
-			 LineStyle.DEFAULT_WIDTH,
-			 Math.round(colour.red() * 0.75F),
-			 Math.round(colour.green() * 0.75F),
-			 Math.round(colour.blue() * 0.75F),
-			 Math.round(colour.alpha() * 0.25F)
+			RenderType.HIDDEN,
+			LineStyle.DEFAULT_WIDTH,
+			Math.round(colour.red() * 0.75F),
+			Math.round(colour.green() * 0.75F),
+			Math.round(colour.blue() * 0.75F),
+			Math.round(colour.alpha() * 0.25F)
 		);
 		this.lines[1] =	new LineStyle(
-			 RenderType.VISIBLE,
-			 LineStyle.DEFAULT_WIDTH,
-			 colour.red(),
-			 colour.green(),
-			 colour.blue(),
-			 colour.alpha()
+			RenderType.VISIBLE,
+			LineStyle.DEFAULT_WIDTH,
+			colour.red(),
+			colour.green(),
+			colour.blue(),
+			colour.alpha()
 		);
 	}
 	

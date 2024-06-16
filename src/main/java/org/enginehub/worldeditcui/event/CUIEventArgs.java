@@ -12,6 +12,8 @@ package org.enginehub.worldeditcui.event;
 import com.google.common.base.Joiner;
 import org.enginehub.worldeditcui.WorldEditCUI;
 
+import java.util.List;
+
 /**
  * CUI communication event
  * Called when a CUI event is sent from the server.
@@ -22,20 +24,20 @@ import org.enginehub.worldeditcui.WorldEditCUI;
  */
 public final class CUIEventArgs
 {
-	private WorldEditCUI controller;
-	private boolean multi;
-	private String type;
-	private String[] params;
+	private final WorldEditCUI controller;
+	private final boolean multi;
+	private final String type;
+	private final List<String> params;
 	
-	public CUIEventArgs(WorldEditCUI controller, boolean multi, String type, String[] params)
+	public CUIEventArgs(WorldEditCUI controller, boolean multi, String type, List<String> params)
 	{
 		this.controller = controller;
 		this.multi = multi;
 		this.type = type;
 		
-		if (params.length == 1 && params[0].length() == 0)
+		if (params.size() == 1 && params.get(0).isEmpty())
 		{
-			params = new String[] {};
+			params = List.of();
 		}
 		
 		this.params = params;
@@ -47,7 +49,7 @@ public final class CUIEventArgs
 		return this.controller;
 	}
 	
-	public String[] getParams()
+	public List<String> getParams()
 	{
 		return this.params;
 	}

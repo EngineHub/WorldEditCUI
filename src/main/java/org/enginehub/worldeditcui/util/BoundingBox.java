@@ -25,22 +25,28 @@ public class BoundingBox extends Observable<RenderRegion> implements Observer
 	private final PointCube pc1, pc2;
 	private Vector3 min, max;
 	
-	public BoundingBox(PointCube pc1, PointCube pc2)
+	public static BoundingBox boundingBox(final PointCube pc1, final PointCube pc2)
+	{
+		final var ret = new BoundingBox(pc1, pc2);
+		ret.update();
+		
+		if (pc1.isDynamic())
+		{
+			pc1.addObserver(ret);
+		}
+		
+		if (pc2.isDynamic())
+		{
+			pc2.addObserver(ret);
+		}
+
+		return ret;
+	}
+
+	private BoundingBox(final PointCube pc1, final PointCube pc2)
 	{
 		this.pc1 = pc1;
 		this.pc2 = pc2;
-		
-		this.update();
-		
-		if (this.pc1.isDynamic())
-		{
-			this.pc1.addObserver(this);
-		}
-		
-		if (this.pc2.isDynamic())
-		{
-			this.pc2.addObserver(this);
-		}
 	}
 
 	public Vector3 getMin()

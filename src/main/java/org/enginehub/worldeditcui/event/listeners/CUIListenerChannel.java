@@ -11,6 +11,7 @@ package org.enginehub.worldeditcui.event.listeners;
 
 import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.event.CUIEventArgs;
+import org.enginehub.worldeditcui.network.CUIEventPayload;
 
 /**
  * Listener class for incoming plugin channel messages
@@ -28,18 +29,13 @@ public class CUIListenerChannel
 		this.controller = controller;
 	}
 	
-	public void onMessage(String message)
+	public void onMessage(final CUIEventPayload message)
 	{
-		String[] split = message.split("\\|", -1);
-		boolean multi = split[0].startsWith("+");
-		String type = split[0].substring(multi ? 1 : 0);
-		String args = message.substring(type.length() + (multi ? 2 : 1));
-		
 		this.controller.getDebugger().debug("Received CUI event from server: " + message);
 		
 		try
 		{
-			CUIEventArgs eventArgs = new CUIEventArgs(this.controller, multi, type, args.split("\\|", -1));
+			CUIEventArgs eventArgs = new CUIEventArgs(this.controller, message.multi(), message.eventType(), message.args());
 			this.controller.getDispatcher().raiseEvent(eventArgs);
 		}
 		catch (Exception ex)

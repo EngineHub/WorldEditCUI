@@ -33,14 +33,15 @@ public class Render3DGrid extends RenderRegion
 	
 	private Vector3 first, second;
 	private double spacing = 1.0;
-	
-	public Render3DGrid(RenderStyle style, BoundingBox region)
+
+	public static Render3DGrid region3dGrid(final RenderStyle style, final BoundingBox region)
 	{
-		this(style, region.getMin(), region.getMax());
+		final var render = new Render3DGrid(style, region.getMin(), region.getMax());
 		if (region.isDynamic())
 		{
-			region.addObserver(this);
+			region.addObserver(render);
 		}
+		return render;
 	}
 	
 	public Render3DGrid(RenderStyle style, Vector3 first, Vector3 second)

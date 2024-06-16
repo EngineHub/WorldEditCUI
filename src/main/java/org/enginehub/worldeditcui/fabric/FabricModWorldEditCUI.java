@@ -11,13 +11,12 @@ package org.enginehub.worldeditcui.fabric;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -25,20 +24,19 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.level.Level;
 import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerChannel;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerWorldRender;
 import org.enginehub.worldeditcui.fabric.mixins.MinecraftAccess;
+import org.enginehub.worldeditcui.network.CUIEventPayload;
 import org.enginehub.worldeditcui.render.OptifinePipelineProvider;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.VanillaPipelineProvider;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
@@ -100,26 +98,26 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(ctx -> {
             if (ctx.advancedTranslucency()) {
                 try {
-                    RenderSystem.getModelViewStack().pushPose();
-                    RenderSystem.getModelViewStack().mulPoseMatrix(ctx.matrixStack().last().pose());
+                    RenderSystem.getModelViewStack().pushMatrix();
+                    RenderSystem.getModelViewStack().mul(ctx.matrixStack().last().pose());
                     RenderSystem.applyModelViewMatrix();
                     ctx.worldRenderer().getTranslucentTarget().bindWrite(false);
                     this.onPostRenderEntities(ctx);
                 } finally {
                     Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-                    RenderSystem.getModelViewStack().popPose();
+                    RenderSystem.getModelViewStack().popMatrix();
                 }
             }
         });
         WorldRenderEvents.LAST.register(ctx -> {
             if (!ctx.advancedTranslucency()) {
                 try {
-                    RenderSystem.getModelViewStack().pushPose();
-                    RenderSystem.getModelViewStack().mulPoseMatrix(ctx.matrixStack().last().pose());
+                    RenderSystem.getModelViewStack().pushMatrix();
+                    RenderSystem.getModelViewStack().mul(ctx.matrixStack().last().pose());
                     RenderSystem.applyModelViewMatrix();
                     this.onPostRenderEntities(ctx);
                 } finally {
-                    RenderSystem.getModelViewStack().popPose();
+                    RenderSystem.getModelViewStack().popMatrix();
                     RenderSystem.applyModelViewMatrix();
                 }
             }
@@ -174,15 +172,9 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         }
     }
 
-    private void onPluginMessage(final Minecraft client, final ClientPacketListener handler, final FriendlyByteBuf data, final PacketSender sender) {
+    private void onPluginMessage(final CUIEventPayload payload, final ClientPlayNetworking.Context ctx) {
         try {
-            final int readableBytes = data.readableBytes();
-            if (readableBytes > 0) {
-                final String stringPayload = data.toString(0, data.readableBytes(), StandardCharsets.UTF_8);
-                client.execute(() -> this.channelListener.onMessage(stringPayload));
-            } else {
-                this.getController().getDebugger().debug("Warning, invalid (zero length) payload received from server");
-            }
+            ctx.client().execute(() -> this.channelListener.onMessage(payload));
         } catch (final Exception ex) {
             this.getController().getDebugger().info("Error decoding payload from server", ex);
         }
@@ -208,9 +200,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     }
 
     private void helo(final ClientPacketListener handler) {
-        final String message = "v|" + WorldEditCUI.PROTOCOL_VERSION;
-        final ByteBuf buffer = Unpooled.copiedBuffer(message, StandardCharsets.UTF_8);
-        CUINetworking.send(handler, new FriendlyByteBuf(buffer));
+        CUINetworking.send(new CUIEventPayload("v", String.valueOf(WorldEditCUI.PROTOCOL_VERSION)));
     }
 
     public WorldEditCUI getController()

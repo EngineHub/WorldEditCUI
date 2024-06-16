@@ -10,12 +10,12 @@
 package org.enginehub.worldeditcui.event.listeners;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import org.enginehub.worldeditcui.config.Colour;
 import org.enginehub.worldeditcui.render.LineStyle;
 import org.enginehub.worldeditcui.render.RenderSink;
 import org.enginehub.worldeditcui.render.RenderStyle;
 import org.enginehub.worldeditcui.util.Vector3;
+import org.joml.Matrix4fStack;
 
 import java.util.function.Consumer;
 
@@ -32,7 +32,7 @@ public final class CUIRenderContext implements RenderSink {
         return this.cameraPos;
     }
 
-    public PoseStack poseStack() {
+    public Matrix4fStack matrixStack() {
         return RenderSystem.getModelViewStack();
     }
 

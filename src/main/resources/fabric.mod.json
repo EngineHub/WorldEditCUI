@@ -15,6 +15,13 @@
     "homepage": "https://github.com/EngineHub/WorldEditCUI",
     "sources": "https://github.com/EngineHub/WorldEditCUI"
   },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/enginehub"
+      }
+    }
+  },
   "icon": "assets/worldeditcui/icon.png",
   "license": "EPL-2.0",
   "environment": "client",

@@ -50,7 +50,7 @@ public class CUIEventSelection extends CUIEvent
 		UUID id = null;
 		if (this.multi)
 		{
-			if (selection == null && this.params.length < 2)
+			if (selection == null && this.params.size() < 2)
 			{
 				this.controller.getDebugger().debug("Received clear selection event.");
 				this.controller.clearRegions();

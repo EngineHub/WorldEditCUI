@@ -70,7 +70,7 @@ public class PolygonRegion extends Region
 	@Override
 	public void setPolygonPoint(int id, int x, int z)
 	{
-		PointRectangle point = new PointRectangle(x, z);
+		PointRectangle point = PointRectangle.pointRectangle(x, z);
 		point.setStyle(this.styles[0]);
 		point.setMinMax(this.min, this.max);
 		

@@ -66,7 +66,7 @@ public class CUIEventColour extends CUIEvent
 			{
 				str = "#" + str;
 			}
-			styles[i] = new CustomStyle(Colour.parseRgbaOr(str, defaultStyles[i].getColour()));
+			styles[i] = CustomStyle.customStyle(Colour.parseRgbaOr(str, defaultStyles[i].getColour()));
 			
 		}
 		

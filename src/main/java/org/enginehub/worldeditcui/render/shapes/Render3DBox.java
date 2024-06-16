@@ -27,15 +27,17 @@ public class Render3DBox extends RenderRegion
 {
 	private Vector3 first, second;
 	
-	public Render3DBox(RenderStyle style, BoundingBox region)
+	public static Render3DBox region3dBox(RenderStyle style, BoundingBox region)
 	{
-		this(style, region.getMin(), region.getMax());
+		final var ret = new Render3DBox(style, region.getMin(), region.getMax());
 		if (region.isDynamic())
 		{
-			region.addObserver(this);
+			region.addObserver(ret);
 		}
+		return ret;
 	}
-	
+
+
 	public Render3DBox(RenderStyle style, Vector3 first, Vector3 second)
 	{
 		super(style);

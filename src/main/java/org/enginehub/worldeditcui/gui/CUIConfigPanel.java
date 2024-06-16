@@ -48,7 +48,7 @@ public class CUIConfigPanel extends Screen {
             this.minecraft.setScreen(parent);
         }).bounds((this.width - BUTTON_DONE_WIDTH) / 2, this.height - (BUTTON_HEIGHT + 7), BUTTON_DONE_WIDTH, BUTTON_HEIGHT).build());
 
-        this.configList = new CUIConfigList(this, this.minecraft);
+        this.configList = CUIConfigList.create(this, this.minecraft);
         this.addWidget(this.configList);
     }
 

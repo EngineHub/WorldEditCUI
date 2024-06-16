@@ -52,7 +52,7 @@ public class EllipsoidRegion extends Region
 	@Override
 	public void setEllipsoidCenter(int x, int y, int z)
 	{
-		this.centre = new PointCube(x, y, z);
+		this.centre = PointCube.pointCube(x, y, z);
 		this.centre.setStyle(this.styles[1]);
 		this.update();
 	}

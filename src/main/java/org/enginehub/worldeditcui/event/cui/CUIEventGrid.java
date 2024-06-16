@@ -57,7 +57,7 @@ public class CUIEventGrid extends CUIEvent
 		selection.setGridSpacing(this.getDouble(0));
 		
 		RenderType renderType = RenderType.ANY;
-		if (this.params.length > 1 && "cull".equalsIgnoreCase(this.getString(1)))
+		if (this.params.size() > 1 && "cull".equalsIgnoreCase(this.getString(1)))
 		{
 			renderType = RenderType.VISIBLE;
 		}

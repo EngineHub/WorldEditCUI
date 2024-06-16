@@ -38,14 +38,20 @@ public class PointCube extends Observable<BoundingBox>
 	
 	protected Render3DBox box;
 	
-	public PointCube(double x, double y, double z)
+	public static PointCube pointCube(final double x, final double y, final double z)
 	{
-		this(new Vector3(x, y, z));
+		return pointCube(new Vector3(x, y, z));
 	}
 	
-	public PointCube(Vector3 point)
+	public static PointCube pointCube(final Vector3 point)
 	{
-		this.setPoint(point);
+		final var ret = new PointCube(point);
+		ret.update();
+		return ret;
+	}
+
+	protected PointCube(final Vector3 point) {
+		this.point = point;
 	}
 	
 	public boolean isDynamic()
@@ -96,7 +102,7 @@ public class PointCube extends Observable<BoundingBox>
 		return this;
 	}
 
-	private void update()
+	protected void update()
 	{
 		this.box = new Render3DBox(this.style, this.point.subtract(PointCube.MIN_VEC), this.point.add(PointCube.MAX_VEC));
 	}

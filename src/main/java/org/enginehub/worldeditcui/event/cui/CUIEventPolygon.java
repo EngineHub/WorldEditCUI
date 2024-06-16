@@ -44,8 +44,8 @@ public class CUIEventPolygon extends CUIEvent
 			return null;
 		}
 
-		final int[] vertexIds = new int[this.params.length];
-		for (int i = 0; i < this.params.length; ++i)
+		final int[] vertexIds = new int[this.params.size()];
+		for (int i = 0; i < this.params.size(); ++i)
 		{
 			vertexIds[i] = this.getInt(i);
 		}

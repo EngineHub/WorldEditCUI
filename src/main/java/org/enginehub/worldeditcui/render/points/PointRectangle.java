@@ -37,14 +37,20 @@ public class PointRectangle
 	
 	private Render3DBox box;
 	
-	public PointRectangle(int x, int z)
+	public static PointRectangle pointRectangle(final int x, final int z)
 	{
-		this(new Vector2(x, z));
+		return new PointRectangle(new Vector2(x, z));
 	}
 	
-	public PointRectangle(Vector2 point)
+	public static PointRectangle pointRectangle(final Vector2 point)
 	{
-		this.setPoint(point);
+		final var ret = new PointRectangle(point);
+		ret.update();
+		return ret;
+	}
+
+	private PointRectangle(final Vector2 pt) {
+		this.point = pt;
 	}
 	
 	public void render(CUIRenderContext ctx)

@@ -25,10 +25,16 @@ public class PointCubeTracking extends PointCube
 	private final Entity entity;
 	private final double traceDistance;
 	private int lastX, lastY, lastZ;
+
+	public static PointCubeTracking pointCubeTracking(final Entity entity, final double traceDistance) {
+		final var ret = new PointCubeTracking(entity, traceDistance);
+		ret.update();
+		return ret;
+	}
 	
-	public PointCubeTracking(Entity entity, double traceDistance)
+	private PointCubeTracking(Entity entity, double traceDistance)
 	{
-		super(0, 0, 0);
+		super(new Vector3(0, 0, 0));
 		this.entity = entity;
 		this.traceDistance = traceDistance;
 	}

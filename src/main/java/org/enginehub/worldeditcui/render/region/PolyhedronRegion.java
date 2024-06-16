@@ -56,7 +56,7 @@ public class PolyhedronRegion extends Region
 	@Override
 	public void setCuboidPoint(int id, double x, double y, double z)
 	{
-		final PointCube vertex = new PointCube(x, y, z).setId(id);
+		final PointCube vertex = PointCube.pointCube(x, y, z).setId(id);
 		vertex.setStyle(id == 0 ? this.styles[2] : this.styles[1]);
 		
 		if (id < this.vertices.size())
