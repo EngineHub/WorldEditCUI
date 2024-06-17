@@ -10,9 +10,8 @@
 package org.enginehub.worldeditcui.fabric;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
-import org.enginehub.worldeditcui.network.CUIEventPayload;
+import org.enginehub.worldeditcui.protocol.CUIEventPayload;
 
 /**
  * Networking wrappers to integrate nicely with MultiConnect.
@@ -33,8 +32,6 @@ final class CUINetworking {
     }
 
     public static void subscribeToCuiPacket(final ClientPlayNetworking.PlayPayloadHandler<CUIEventPayload> handler) {
-        PayloadTypeRegistry.playS2C().register(CUIEventPayload.TYPE, CUIEventPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(CUIEventPayload.TYPE, CUIEventPayload.CODEC);
         ClientPlayNetworking.registerGlobalReceiver(CUIEventPayload.TYPE, handler);
         if (VIAFABRICPLUS_AVAILABLE) {
             ViaFabricPlusHook.enable();

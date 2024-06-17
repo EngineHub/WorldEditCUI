@@ -1,13 +1,18 @@
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.kyori.indra.licenser.spotless.IndraSpotlessLicenserExtension
 
 plugins {
     base
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.spotless)
+    alias(libs.plugins.indra.spotlessLicenser) apply false
     alias(libs.plugins.javaEcosystemCapabilities) apply false
 }
 
 allprojects {
+    group = "org.enginehub.worldeditcui"
+    version = "${rootProject.libs.versions.minecraft.get()}+01-SNAPSHOT"
+
     repositories {
         // mirrors:
         // - https://maven.enginehub.org/repo/
@@ -32,6 +37,7 @@ allprojects {
 subprojects {
     apply(plugin = "java")
     apply(plugin = "com.diffplug.spotless")
+    apply(plugin = "net.kyori.indra.licenser.spotless")
     apply(plugin = "org.gradlex.java-ecosystem-capabilities")
 
     val targetJavaVersion: String by project
@@ -42,6 +48,7 @@ subprojects {
         if (JavaVersion.current() < JavaVersion.toVersion(targetVersion)) {
             toolchain.languageVersion = JavaLanguageVersion.of(targetVersion)
         }
+        withSourcesJar()
     }
 
     tasks.withType(JavaCompile::class).configureEach {
@@ -49,6 +56,19 @@ subprojects {
         options.encoding = "UTF-8"
         options.compilerArgs.addAll(listOf("-Xlint:all", "-Xlint:-processing"))
     }
+
+    tasks.named("processResources", ProcessResources::class).configure {
+        inputs.property("version", project.version)
+
+        filesMatching("fabric.mod.json") {
+            expand("version" to project.version)
+        }
+    }
+
+    extensions.configure(IndraSpotlessLicenserExtension::class) {
+        licenseHeaderFile(rootProject.file("HEADER"))
+    }
+
 
     plugins.withId("dev.architectury.loom") {
         val loom = extensions.getByType(LoomGradleExtensionAPI::class)
@@ -67,6 +87,7 @@ subprojects {
         }
 
         dependencies {
+            "minecraft"(libs.minecraft)
             "mappings"(loom.layered {
                 officialMojangMappings {
                     nameSyntheticMembers = false

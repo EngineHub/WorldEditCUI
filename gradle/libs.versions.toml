@@ -22,6 +22,7 @@ vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" 
 worldedit = { module = "com.sk89q.worldedit:worldedit-fabric-mc1.20.6", version = "7.3.1" }
 
 [plugins]
+architecturyPlugin = { id = "architectury-plugin", version = "3.4.155" }
 curseForgeGradle = { id = "net.darkhax.curseforgegradle", version = "1.1.18" }
 indra-git = { id = "net.kyori.indra.git", version.ref = "indra" }
 indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }

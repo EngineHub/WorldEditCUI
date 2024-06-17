@@ -13,16 +13,9 @@ plugins {
     alias(libs.plugins.publishGithubRelease)
 }
 
-group = "org.enginehub.worldeditcui"
-version = "${libs.versions.minecraft.get()}+01-SNAPSHOT"
 base {
     archivesName = "WorldEditCUI"
 }
-
-indraSpotlessLicenser {
-    licenseHeaderFile(rootProject.file("HEADER"))
-}
-
 loom {
     runs {
         named("client") {
@@ -42,7 +35,9 @@ loom {
 
 val fabricApi by configurations.creating
 dependencies {
-    minecraft(libs.minecraft)
+    implementation(project(":worldeditcui-protocol-fabric", configuration = "namedElements")) { isTransitive = false }
+    implementation(project(":worldeditcui-protocol-common", configuration = "namedElements")) { isTransitive = false }
+    include(project(":worldeditcui-protocol-fabric")) // todo shadow?
     modImplementation(libs.fabric.loader)
     modImplementation(libs.modmenu)
     modCompileOnly(libs.viafabricplus.api) {
@@ -163,13 +158,6 @@ tasks {
         }
     }
 
-    processResources.configure {
-        inputs.property("version", project.version)
-
-        filesMatching("fabric.mod.json") {
-            expand("version" to project.version)
-        }
-    }
 }
 
 // Releasing

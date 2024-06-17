@@ -11,7 +11,7 @@ package org.enginehub.worldeditcui.event.listeners;
 
 import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.event.CUIEventArgs;
-import org.enginehub.worldeditcui.network.CUIEventPayload;
+import org.enginehub.worldeditcui.protocol.CUIEventPayload;
 
 /**
  * Listener class for incoming plugin channel messages

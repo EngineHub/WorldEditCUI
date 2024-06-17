@@ -30,7 +30,7 @@ import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerChannel;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerWorldRender;
 import org.enginehub.worldeditcui.fabric.mixins.MinecraftAccess;
-import org.enginehub.worldeditcui.network.CUIEventPayload;
+import org.enginehub.worldeditcui.protocol.CUIEventPayload;
 import org.enginehub.worldeditcui.render.OptifinePipelineProvider;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.VanillaPipelineProvider;
