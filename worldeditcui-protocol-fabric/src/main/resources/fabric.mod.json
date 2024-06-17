@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "worldeditcui-protocol",
+  "id": "worldeditcui_protocol",
   "version": "${version}",
   "name": "WorldEditCUI Protocol (Fabric)",
   "description": "Protocol implementation for the client-side user interface for WorldEdit",
@@ -17,7 +17,7 @@
   },
   "custom": {
     "modmenu": {
-      "library": true,
+      "badges": [ "library" ],
       "links": {
         "modmenu.discord": "https://discord.gg/enginehub"
       }

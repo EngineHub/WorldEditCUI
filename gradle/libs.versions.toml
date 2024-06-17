@@ -15,6 +15,8 @@ minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
 parchment = { module = "org.parchmentmc.data:parchment-1.20.6", version = "2024.05.01" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
+fabric-api-bom = { module = "net.fabricmc.fabric-api:fabric-api-bom", version.ref = "fabricApi" }
+fabric-api-networking = { module = "net.fabricmc.fabric-api:fabric-networking-api-v1" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 neoforge = { module = "net.neoforged:neoforge", version = "20.6.119"}
 viafabricplus-api = { module = "de.florianmichael:ViaFabricPlus", version.ref = "viafabricplus" }
@@ -31,5 +33,6 @@ javaEcosystemCapabilities = { id = "org.gradlex.java-ecosystem-capabilities", ve
 loom = { id = "dev.architectury.loom", version = "1.6.397" }
 minotaur = { id = "com.modrinth.minotaur", version = "2.8.7" }
 publishGithubRelease = { id = "ca.stellardrift.publish-github-release", version = "0.1.0" }
+shadow = { id = "io.github.goooler.shadow", version = "8.1.7" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }

@@ -16,6 +16,7 @@ package org.enginehub.worldeditcui.fabric.network;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import org.apache.commons.compress.archivers.sevenz.CLI;
 import org.enginehub.worldeditcui.protocol.CUIPacket;
 import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 
@@ -41,7 +42,7 @@ public class FabricCUIPacketHandler implements CUIPacketHandler {
     static void registerClient() {
         ClientPlayNetworking.registerGlobalReceiver(CUIPacket.TYPE, (pkt, ctx) -> {
             final PacketContext cuiCtx = new PacketContext(ctx.player(), ctx.client());
-            for (BiConsumer<CUIPacket, PacketContext> handler : SERVERBOUND_HANDLERS) {
+            for (BiConsumer<CUIPacket, PacketContext> handler : CLIENTBOUND_HANDLERS) {
                 handler.accept(pkt, cuiCtx);
             }
         });

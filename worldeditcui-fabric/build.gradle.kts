@@ -37,7 +37,7 @@ val fabricApi by configurations.creating
 dependencies {
     implementation(project(":worldeditcui-protocol-fabric", configuration = "namedElements")) { isTransitive = false }
     implementation(project(":worldeditcui-protocol-common", configuration = "namedElements")) { isTransitive = false }
-    include(project(":worldeditcui-protocol-fabric")) // todo shadow?
+    include(project(":worldeditcui-protocol-fabric"))
     modImplementation(libs.fabric.loader)
     modImplementation(libs.modmenu)
     modCompileOnly(libs.viafabricplus.api) {

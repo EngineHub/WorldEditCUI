@@ -38,6 +38,7 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "com.diffplug.spotless")
     apply(plugin = "net.kyori.indra.licenser.spotless")
+    apply(plugin = "maven-publish")
 
     val targetJavaVersion: String by project
     val targetVersion = targetJavaVersion.toInt()
@@ -99,6 +100,14 @@ subprojects {
 
         configurations.named("modLocalRuntime") {
             shouldResolveConsistentlyWith(configurations.getByName("modImplementation"))
+        }
+    }
+
+    extensions.configure(PublishingExtension::class) {
+        publications {
+            register("maven", MavenPublication::class) {
+                from(components.getByName("java"))
+            }
         }
     }
 }

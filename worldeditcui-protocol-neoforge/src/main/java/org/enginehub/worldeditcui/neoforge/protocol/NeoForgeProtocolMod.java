@@ -14,17 +14,23 @@
  */
 package org.enginehub.worldeditcui.neoforge.protocol;
 
+import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.enginehub.worldeditcui.protocol.CUIPacket;
 
-@Mod("worldeditcui-protocol")
+@Mod("worldeditcui_protocol")
 public class NeoForgeProtocolMod {
+
+    public NeoForgeProtocolMod(final IEventBus modBus) {
+        modBus.register(this);
+    }
+
     @SubscribeEvent
-    public static void registerPacket(final RegisterPayloadHandlersEvent event) {
-        final PayloadRegistrar registrar = event.registrar(CUIPacket.protocolVersion());
+    public void registerPacket(final RegisterPayloadHandlersEvent event) {
+        final PayloadRegistrar registrar = event.registrar(CUIPacket.protocolVersion()).optional();
         registrar.playBidirectional(CUIPacket.TYPE, CUIPacket.CODEC, NeoForgeCUIPacketHandler.asHandler());
     }
 }
