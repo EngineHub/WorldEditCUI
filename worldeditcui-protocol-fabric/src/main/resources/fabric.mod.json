@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "worldeditcui-protocol-fabric",
+  "id": "worldeditcui-protocol",
   "version": "${version}",
   "name": "WorldEditCUI Protocol (Fabric)",
   "description": "Protocol implementation for the client-side user interface for WorldEdit",
@@ -24,10 +24,12 @@
     }
   },
   "license": "EPL-2.0",
-  "environment": "client",
   "entrypoints": {
     "main": [
-      "org.enginehub.worldeditcui.fabric.network.CUIPacketRegistration"
+      "org.enginehub.worldeditcui.fabric.network.FabricCUIPacketRegistration"
+    ],
+    "client": [
+      "org.enginehub.worldeditcui.fabric.network.FabricClientCUIPacketRegistration"
     ]
   },
   "depends": {

@@ -27,20 +27,25 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
 
-public record CUIEventPayload(boolean multi, String eventType, List<String> args) implements CustomPacketPayload {
+public record CUIPacket(boolean multi, String eventType, List<String> args) implements CustomPacketPayload {
+    private static final String PROTOCOL_VERSION = "4";
     private static final Logger LOGGER = LogUtils.getLogger();
-    public static final CustomPacketPayload.Type<CUIEventPayload> TYPE = new Type<>(new ResourceLocation("worldedit", "cui"));
-    public static final StreamCodec<RegistryFriendlyByteBuf, CUIEventPayload> CODEC = CustomPacketPayload.codec(CUIEventPayload::encode, CUIEventPayload::decode);
+    public static final CustomPacketPayload.Type<CUIPacket> TYPE = new Type<>(new ResourceLocation("worldedit", "cui"));
+    public static final StreamCodec<RegistryFriendlyByteBuf, CUIPacket> CODEC = CustomPacketPayload.codec(CUIPacket::encode, CUIPacket::decode);
 
-    public CUIEventPayload {
+    public CUIPacket {
         args = List.copyOf(args);
     }
 
-    public CUIEventPayload(final String eventType, final String... args) {
+    public CUIPacket(final String eventType, final String... args) {
         this(false, eventType, List.of(args));
     }
 
-    public static CUIEventPayload decode(final FriendlyByteBuf buf) {
+    public static String protocolVersion() {
+        return PROTOCOL_VERSION;
+    }
+
+    private static CUIPacket decode(final FriendlyByteBuf buf) {
         final int readableBytes = buf.readableBytes();
         if (readableBytes <= 0) {
             throw new IllegalStateException("Warning, invalid (zero length) payload received");
@@ -53,12 +58,12 @@ public record CUIEventPayload(boolean multi, String eventType, List<String> args
         String type = split[0].substring(multi ? 1 : 0);
         List<String> args = split.length > 1 ? List.of(Arrays.copyOfRange(split, 1, split.length)) : List.of();
 
-        final CUIEventPayload pkt = new CUIEventPayload(multi, type, args);
+        final CUIPacket pkt = new CUIPacket(multi, type, args);
         LOGGER.debug("Received CUI event from server: {}", pkt);
         return pkt;
     }
 
-    public void encode(final FriendlyByteBuf buf) {
+    private void encode(final FriendlyByteBuf buf) {
         final StringBuilder builder = new StringBuilder();
         if (this.multi()) {
             builder.append('+');

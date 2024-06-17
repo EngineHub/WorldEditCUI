@@ -16,6 +16,7 @@ parchment = { module = "org.parchmentmc.data:parchment-1.20.6", version = "2024.
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
+neoforge = { module = "net.neoforged:neoforge", version = "20.6.119"}
 viafabricplus-api = { module = "de.florianmichael:ViaFabricPlus", version.ref = "viafabricplus" }
 viaversion = { module = "com.viaversion:viaversion-common", version = "5.0.0-SNAPSHOT" }
 vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }

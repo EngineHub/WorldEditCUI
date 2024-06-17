@@ -11,7 +11,10 @@ package org.enginehub.worldeditcui.fabric;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import org.enginehub.worldeditcui.protocol.CUIEventPayload;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
+import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
+
+import java.util.function.BiConsumer;
 
 /**
  * Networking wrappers to integrate nicely with MultiConnect.
@@ -27,12 +30,12 @@ final class CUINetworking {
     private CUINetworking() {
     }
 
-    public static void send(final CUIEventPayload pkt) {
+    public static void send(final CUIPacket pkt) {
         ClientPlayNetworking.send(pkt);
     }
 
-    public static void subscribeToCuiPacket(final ClientPlayNetworking.PlayPayloadHandler<CUIEventPayload> handler) {
-        ClientPlayNetworking.registerGlobalReceiver(CUIEventPayload.TYPE, handler);
+    public static void subscribeToCuiPacket(final BiConsumer<CUIPacket, CUIPacketHandler.PacketContext> handler) {
+        CUIPacketHandler.instance().registerClientboundHandler(handler);
         if (VIAFABRICPLUS_AVAILABLE) {
             ViaFabricPlusHook.enable();
         }

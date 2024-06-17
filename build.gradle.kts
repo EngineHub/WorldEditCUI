@@ -6,7 +6,6 @@ plugins {
     alias(libs.plugins.loom) apply false
     alias(libs.plugins.spotless)
     alias(libs.plugins.indra.spotlessLicenser) apply false
-    alias(libs.plugins.javaEcosystemCapabilities) apply false
 }
 
 allprojects {
@@ -18,6 +17,7 @@ allprojects {
         // - https://maven.enginehub.org/repo/
         // - https://maven.terraformersmc.com/releases/
         // - https://maven.minecraftforge.net/
+        // - https://maven.neoforged.net/
         // - https://maven.parchmentmc.org/
         // - https://repo.viaversion.com/
         maven(url = "https://repo.stellardrift.ca/repository/stable/") {
@@ -38,7 +38,6 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "com.diffplug.spotless")
     apply(plugin = "net.kyori.indra.licenser.spotless")
-    apply(plugin = "org.gradlex.java-ecosystem-capabilities")
 
     val targetJavaVersion: String by project
     val targetVersion = targetJavaVersion.toInt()
@@ -60,15 +59,16 @@ subprojects {
     tasks.named("processResources", ProcessResources::class).configure {
         inputs.property("version", project.version)
 
-        filesMatching("fabric.mod.json") {
-            expand("version" to project.version)
+        sequenceOf("fabric.mod.json", "META-INF/neoforge.mods.toml").forEach {
+            filesMatching(it) {
+                expand("version" to project.version)
+            }
         }
     }
 
     extensions.configure(IndraSpotlessLicenserExtension::class) {
         licenseHeaderFile(rootProject.file("HEADER"))
     }
-
 
     plugins.withId("dev.architectury.loom") {
         val loom = extensions.getByType(LoomGradleExtensionAPI::class)

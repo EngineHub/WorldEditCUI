@@ -37,6 +37,7 @@
     "worldeditcui.mixins.json"
   ],
   "depends": {
+    "worldeditcui-protocol": "*",
     "fabric-api-base": "*",
     "fabric-key-binding-api-v1": "^1.0.0",
     "fabric-networking-api-v1": "*",

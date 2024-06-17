@@ -14,14 +14,11 @@
  */
 package org.enginehub.worldeditcui.fabric.network;
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import org.enginehub.worldeditcui.protocol.CUIEventPayload;
+import net.fabricmc.api.ClientModInitializer;
 
-public class CUIPacketRegistration implements ModInitializer {
+public class FabricClientCUIPacketRegistration implements ClientModInitializer {
     @Override
-    public void onInitialize() {
-        PayloadTypeRegistry.playS2C().register(CUIEventPayload.TYPE, CUIEventPayload.CODEC);
-        PayloadTypeRegistry.playC2S().register(CUIEventPayload.TYPE, CUIEventPayload.CODEC);
+    public void onInitializeClient() {
+        FabricCUIPacketHandler.registerClient();
     }
 }

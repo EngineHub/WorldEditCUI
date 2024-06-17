@@ -11,7 +11,7 @@ package org.enginehub.worldeditcui.event.listeners;
 
 import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.event.CUIEventArgs;
-import org.enginehub.worldeditcui.protocol.CUIEventPayload;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
 
 /**
  * Listener class for incoming plugin channel messages
@@ -29,7 +29,7 @@ public class CUIListenerChannel
 		this.controller = controller;
 	}
 	
-	public void onMessage(final CUIEventPayload message)
+	public void onMessage(final CUIPacket message)
 	{
 		this.controller.getDebugger().debug("Received CUI event from server: " + message);
 		

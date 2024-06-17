@@ -16,7 +16,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -30,7 +29,8 @@ import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerChannel;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerWorldRender;
 import org.enginehub.worldeditcui.fabric.mixins.MinecraftAccess;
-import org.enginehub.worldeditcui.protocol.CUIEventPayload;
+import org.enginehub.worldeditcui.protocol.CUIPacket;
+import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 import org.enginehub.worldeditcui.render.OptifinePipelineProvider;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.VanillaPipelineProvider;
@@ -172,9 +172,9 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         }
     }
 
-    private void onPluginMessage(final CUIEventPayload payload, final ClientPlayNetworking.Context ctx) {
+    private void onPluginMessage(final CUIPacket payload, final CUIPacketHandler.PacketContext ctx) {
         try {
-            ctx.client().execute(() -> this.channelListener.onMessage(payload));
+            ctx.workExecutor().execute(() -> this.channelListener.onMessage(payload));
         } catch (final Exception ex) {
             this.getController().getDebugger().info("Error decoding payload from server", ex);
         }
@@ -200,7 +200,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     }
 
     private void helo(final ClientPacketListener handler) {
-        CUINetworking.send(new CUIEventPayload("v", String.valueOf(WorldEditCUI.PROTOCOL_VERSION)));
+        CUINetworking.send(new CUIPacket("v", CUIPacket.protocolVersion()));
     }
 
     public WorldEditCUI getController()
