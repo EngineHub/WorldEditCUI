@@ -3,7 +3,7 @@ rootProject.name = "WorldEditCUI"
 pluginManagement {
     repositories {
         // mirrors:
-        // - https://server.bbkr.space/artifactory/libs-release/
+        // - https://maven.architectury.dev/
         // - https://maven.fabricmc.net/
         // - gradlePluginPortal
         maven(url = "https://repo.stellardrift.ca/repository/stable/") {
@@ -17,4 +17,13 @@ pluginManagement {
         // maven("https://maven.fabricmc.net/")
         // gradlePluginPortal()
     }
+}
+
+sequenceOf(
+    "fabric",
+    "protocol-common",
+    "protocol-fabric",
+    "protocol-neoforge",
+).forEach {
+    include("worldeditcui-$it")
 }

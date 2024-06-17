@@ -26,10 +26,11 @@ dependency-reduced-pom.xml
 !gradle-wrapper.jar
 .gradle/
 /build/
-*/build/
+/*/build/
+/.architectury-transformer/
 
 # Fabric stuff
-/run/
+/*/run/
 
 # OS X quirks
 .DS_Store

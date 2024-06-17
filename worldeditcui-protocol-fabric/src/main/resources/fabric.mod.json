@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "id": "worldeditcui_protocol",
+  "version": "${version}",
+  "name": "WorldEditCUI Protocol (Fabric)",
+  "description": "Protocol implementation for the client-side user interface for WorldEdit",
+  "authors": [
+    "lahwran",
+    "yetanotherx",
+    "Mumfrey",
+    "TomyLobo",
+    "mikroskeem"
+  ],
+  "contact": {
+    "homepage": "https://github.com/EngineHub/WorldEditCUI",
+    "sources": "https://github.com/EngineHub/WorldEditCUI"
+  },
+  "custom": {
+    "modmenu": {
+      "badges": [ "library" ],
+      "links": {
+        "modmenu.discord": "https://discord.gg/enginehub"
+      }
+    }
+  },
+  "license": "EPL-2.0",
+  "entrypoints": {
+    "main": [
+      "org.enginehub.worldeditcui.fabric.network.FabricCUIPacketRegistration"
+    ],
+    "client": [
+      "org.enginehub.worldeditcui.fabric.network.FabricClientCUIPacketRegistration"
+    ]
+  },
+  "depends": {
+    "fabric-api-base": "*",
+    "fabric-networking-api-v1": "*",
+    "minecraft": ">=1.20.5"
+  }
+}

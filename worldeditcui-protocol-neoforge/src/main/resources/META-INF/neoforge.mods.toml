@@ -1,0 +1,27 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+issueTrackerURL = "https://github.com/EngineHub/WorldEditCUI/issues"
+license = "EPL-2.0"
+
+[[mods]]
+modId = "worldeditcui_protocol"
+version = "${version}"
+displayName = "WorldEditCUI Protocol (NeoForge)"
+authors = "lahwran, yetanotherx, Mumfrey, TomyLobo, mikroskeem"
+description = '''
+Protocol implementation for the client-side user interface for WorldEdit
+'''
+
+[[dependencies.worldeditcui_protocol]]
+modId = "neoforge"
+type = "required"
+versionRange = "[20.6,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.worldeditcui_protocol]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.20.6,)"
+ordering = "NONE"
+side = "BOTH"
