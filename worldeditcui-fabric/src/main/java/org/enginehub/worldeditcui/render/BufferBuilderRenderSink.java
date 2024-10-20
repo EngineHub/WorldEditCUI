@@ -14,14 +14,13 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.ShaderProgram;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL32;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 public class BufferBuilderRenderSink implements RenderSink {
 
@@ -270,9 +269,9 @@ public class BufferBuilderRenderSink implements RenderSink {
         private final VertexFormat.Mode mode;
         private final VertexFormat format;
         private final boolean hasNormals;
-        private final Supplier<ShaderInstance> shader;
+        private final ShaderProgram shader;
 
-        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, final Supplier<ShaderInstance> shader) {
+        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, final ShaderProgram shader) {
             this.mode = mode;
             this.format = format;
             this.hasNormals = format.getElementAttributeNames().contains("Normal");
@@ -291,7 +290,7 @@ public class BufferBuilderRenderSink implements RenderSink {
             return this.hasNormals;
         }
 
-        Supplier<ShaderInstance> shader() {
+        ShaderProgram shader() {
             return this.shader;
         }
 
