@@ -3,9 +3,9 @@ format = { version = "1.1" }
 
 [versions]
 indra = "3.1.3"
-minecraft = "1.21"
-fabricLoader = "0.15.11"
-fabricApi = "0.100.5+1.21"
+minecraft = "1.21.1"
+fabricLoader = "0.16.7"
+fabricApi = "0.106.0+1.21.1"
 modmenu = "11.0.1"
 viafabricplus = "3.3.0"
 vineflower = "1.10.1"
@@ -13,28 +13,28 @@ cuiProtocol = "4.0.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-parchment = { module = "org.parchmentmc.data:parchment-1.20.6", version = "2024.05.01" }
+parchment = { module = "org.parchmentmc.data:parchment-1.21", version = "2024.07.28" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 fabric-api-bom = { module = "net.fabricmc.fabric-api:fabric-api-bom", version.ref = "fabricApi" }
 fabric-api-networking = { module = "net.fabricmc.fabric-api:fabric-networking-api-v1" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-neoforge = { module = "net.neoforged:neoforge", version = "20.6.119"}
+neoforge = { module = "net.neoforged:neoforge", version = "21.1.72"}
 viafabricplus-api = { module = "de.florianmichael:ViaFabricPlus", version.ref = "viafabricplus" }
-viaversion = { module = "com.viaversion:viaversion-common", version = "5.0.0-SNAPSHOT" }
+viaversion = { module = "com.viaversion:viaversion-common", version = "5.0.5" }
 vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
-worldedit = { module = "com.sk89q.worldedit:worldedit-fabric-mc1.20.6", version = "7.3.1" }
+worldedit = { module = "com.sk89q.worldedit:worldedit-fabric-mc1.21", version = "7.3.7" }
 
 [plugins]
-architecturyPlugin = { id = "architectury-plugin", version = "3.4.155" }
-curseForgeGradle = { id = "net.darkhax.curseforgegradle", version = "1.1.18" }
+architecturyPlugin = { id = "architectury-plugin", version = "3.4.159" }
+curseForgeGradle = { id = "net.darkhax.curseforgegradle", version = "1.1.25" }
 indra-git = { id = "net.kyori.indra.git", version.ref = "indra" }
 indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
-javaEcosystemCapabilities = { id = "org.gradlex.java-ecosystem-capabilities", version = "1.5.2" }
-loom = { id = "dev.architectury.loom", version = "1.6.397" }
+jvmConflictResolution = { id = "org.gradlex.jvm-dependency-conflict-resolution", version = "2.1.2" }
+loom = { id = "dev.architectury.loom", version = "1.7.413" }
 minotaur = { id = "com.modrinth.minotaur", version = "2.8.7" }
 publishGithubRelease = { id = "ca.stellardrift.publish-github-release", version = "0.1.0" }
-shadow = { id = "io.github.goooler.shadow", version = "8.1.7" }
+shadow = { id = "com.gradleup.shadow", version = "8.3.3" }
 spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
