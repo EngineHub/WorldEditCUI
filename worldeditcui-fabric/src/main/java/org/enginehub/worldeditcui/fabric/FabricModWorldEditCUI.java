@@ -28,7 +28,6 @@ import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerChannel;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerWorldRender;
-import org.enginehub.worldeditcui.fabric.mixins.MinecraftAccess;
 import org.enginehub.worldeditcui.protocol.CUIPacket;
 import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 import org.enginehub.worldeditcui.render.OptifinePipelineProvider;
@@ -127,7 +126,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     private void onTick(final Minecraft mc) {
         final CUIConfiguration config = this.controller.getConfiguration();
         final boolean inGame = mc.player != null;
-        final boolean clock = ((MinecraftAccess) mc).getTimer().partialTick > 0;
+        final boolean clock = mc.getTimer().getGameTimeDeltaPartialTick(false) > 0;
 
         if (inGame && mc.screen == null) {
             while (this.keyBindToggleUI.consumeClick()) {
@@ -195,7 +194,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
 
     public void onPostRenderEntities(final WorldRenderContext ctx) {
         if (this.visible) {
-            this.worldRenderListener.onRender(ctx.tickDelta());
+            this.worldRenderListener.onRender(ctx.tickCounter().getRealtimeDeltaTicks());
         }
     }
 

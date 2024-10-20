@@ -33,9 +33,6 @@
       "org.enginehub.worldeditcui.fabric.ConfigPanelFactory"
     ]
   },
-  "mixins": [
-    "worldeditcui.mixins.json"
-  ],
   "depends": {
     "worldeditcui_protocol": "*",
     "fabric-api-base": "*",

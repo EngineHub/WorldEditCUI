@@ -30,7 +30,7 @@ import java.util.List;
 public record CUIPacket(boolean multi, String eventType, List<String> args) implements CustomPacketPayload {
     private static final String PROTOCOL_VERSION = "4";
     private static final Logger LOGGER = LogUtils.getLogger();
-    public static final CustomPacketPayload.Type<CUIPacket> TYPE = new Type<>(new ResourceLocation("worldedit", "cui"));
+    public static final CustomPacketPayload.Type<CUIPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath("worldedit", "cui"));
     public static final StreamCodec<RegistryFriendlyByteBuf, CUIPacket> CODEC = CustomPacketPayload.codec(CUIPacket::encode, CUIPacket::decode);
 
     public CUIPacket {
