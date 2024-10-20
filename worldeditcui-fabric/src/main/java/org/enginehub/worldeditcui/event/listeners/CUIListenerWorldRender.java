@@ -11,10 +11,11 @@ package org.enginehub.worldeditcui.event.listeners;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.FogRenderer;
-import net.minecraft.client.renderer.ShaderInstance;
+import net.minecraft.client.renderer.CompiledShaderProgram;
+import net.minecraft.client.renderer.FogParameters;
+import net.minecraft.util.profiling.Profiler;
+import net.minecraft.util.profiling.ProfilerFiller;
 import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.render.LineStyle;
 import org.enginehub.worldeditcui.render.PipelineProvider;
@@ -92,10 +93,11 @@ public class CUIListenerWorldRender
 				// allow ignoring eg. shadow pass
 				return;
 			}
-			Minecraft.getInstance().getProfiler().push("worldeditcui");
+			final ProfilerFiller profiler = Profiler.get();
+			profiler.push("worldeditcui");
 			this.ctx.init(new Vector3(this.minecraft.gameRenderer.getMainCamera().getPosition()), partialTicks, sink);
-			final float fogStart = RenderSystem.getShaderFogStart();
-			FogRenderer.setupNoFog();
+			final FogParameters fogStart = RenderSystem.getShaderFog();
+			RenderSystem.setShaderFog(FogParameters.NO_FOG);
 			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
 			poseStack.pushMatrix();
 			RenderSystem.disableCull();
@@ -106,7 +108,7 @@ public class CUIListenerWorldRender
 			RenderSystem.depthMask(true);
 			RenderSystem.lineWidth(LineStyle.DEFAULT_WIDTH);
 
-			final ShaderInstance oldShader = RenderSystem.getShader();
+			final CompiledShaderProgram oldShader = RenderSystem.getShader();
 			try {
 				this.controller.renderSelections(this.ctx);
 				this.sink.flush();
@@ -116,13 +118,13 @@ public class CUIListenerWorldRender
 			}
 
 			RenderSystem.depthFunc(GL32.GL_LEQUAL);
-			RenderSystem.setShader(() -> oldShader);
+			RenderSystem.setShader(oldShader);
 			// RenderSystem.enableTexture();
 			RenderSystem.disableBlend();
 			RenderSystem.enableCull();
 			poseStack.popMatrix();
-			RenderSystem.setShaderFogStart(fogStart);
-			Minecraft.getInstance().getProfiler().pop();
+			RenderSystem.setShaderFog(fogStart);
+			profiler.pop();
 		} catch (final Exception ex)
 		{
 			this.controller.getDebugger().error("Failed while preparing state for WorldEdit CUI", ex);
