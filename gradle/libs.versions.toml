@@ -3,10 +3,10 @@ format = { version = "1.1" }
 
 [versions]
 indra = "3.1.3"
-minecraft = "1.21.1"
+minecraft = "1.21.3"
 fabricLoader = "0.16.7"
-fabricApi = "0.106.0+1.21.1"
-modmenu = "11.0.1"
+fabricApi = "0.106.1+1.21.3"
+modmenu = "12.0.0-beta.1"
 viafabricplus = "3.3.0"
 vineflower = "1.10.1"
 
@@ -18,7 +18,7 @@ fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fab
 fabric-api-bom = { module = "net.fabricmc.fabric-api:fabric-api-bom", version.ref = "fabricApi" }
 fabric-api-networking = { module = "net.fabricmc.fabric-api:fabric-networking-api-v1" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-neoforge = { module = "net.neoforged:neoforge", version = "21.1.72"}
+neoforge = { module = "net.neoforged:neoforge", version = "21.3.3-beta"}
 viafabricplus-api = { module = "de.florianmichael:ViaFabricPlus", version.ref = "viafabricplus" }
 viaversion = { module = "com.viaversion:viaversion-common", version = "5.0.5" }
 vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
