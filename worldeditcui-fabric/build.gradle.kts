@@ -38,6 +38,7 @@ dependencies {
     implementation(project(":worldeditcui-protocol-fabric", configuration = "namedElements")) { isTransitive = false }
     implementation(project(":worldeditcui-protocol-common", configuration = "namedElements")) { isTransitive = false }
     include(project(":worldeditcui-protocol-fabric"))
+    include(project(":worldeditcui-protocol-common"))
     modImplementation(libs.fabric.loader)
     modImplementation(libs.modmenu)
     modCompileOnly(libs.viafabricplus.api) {
