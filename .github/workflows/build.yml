@@ -23,14 +23,14 @@ jobs:
       - name: setup / checkout repository
         uses: actions/checkout@v4
       - name: setup / validate gradle wrapper
-        uses: gradle/actions/wrapper-validation@v3
+        uses: gradle/actions/wrapper-validation@v4
       - name: setup / jdk ${{ env.RUNTIME_VERSION }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: ${{ env.RUNTIME_VERSION }}
       - name: setup / gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
           cache-read-only: ${{ !(startsWith(github.ref, 'refs/heads/mc/') || github.ref == 'refs/heads/master') || github.event_name == 'pull_request' }}
       - name: run gradle build
