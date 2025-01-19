@@ -69,11 +69,6 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
     }
 
     @Override
-    protected int getScrollbarPosition() {
-        return super.getScrollbarPosition() + 15;
-    }
-
-    @Override
     public int getRowWidth() {
         return super.getRowWidth() + 32;
     }
