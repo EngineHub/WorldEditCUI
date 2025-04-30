@@ -31,12 +31,7 @@ public class FabricCUIPacketHandler implements CUIPacketHandler {
     private static final Set<BiConsumer<CUIPacket, PacketContext>> SERVERBOUND_HANDLERS = ConcurrentHashMap.newKeySet();
 
     static void register() {
-        ServerPlayNetworking.registerGlobalReceiver(CUIPacket.TYPE, (pkt, ctx) -> {
-            final PacketContext cuiCtx = new PacketContext(ctx.player(), ctx.player().getServer());
-            for (BiConsumer<CUIPacket, PacketContext> handler : SERVERBOUND_HANDLERS) {
-                handler.accept(pkt, cuiCtx);
-            }
-        });
+        // Don't register a serverside receiver. That is already done by world edit with a different packet type.
     }
 
     static void registerClient() {

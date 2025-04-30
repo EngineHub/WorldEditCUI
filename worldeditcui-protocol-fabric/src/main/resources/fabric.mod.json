@@ -32,6 +32,9 @@
       "org.enginehub.worldeditcui.fabric.network.FabricClientCUIPacketRegistration"
     ]
   },
+  "mixins": [
+    "worldeditcui_protocol.mixins.json"
+  ],
   "depends": {
     "fabric-api-base": "*",
     "fabric-networking-api-v1": "*",
