@@ -9,28 +9,30 @@
  */
 package org.enginehub.worldeditcui.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
-import com.mojang.blaze3d.vertex.Tesselator;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.ShaderProgram;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.platform.DepthTestFunction;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL32;
 
-import java.util.Objects;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.OptionalDouble;
 
-public class BufferBuilderRenderSink implements RenderSink {
+public class VertexConsumerRenderSink implements RenderSink {
 
-    private final RenderType lines;
-    private final RenderType lineLoop;
-    private final RenderType quads;
+    private final ConfiguredRenderType lines;
+    private final ConfiguredRenderType lineLoop;
+    private final ConfiguredRenderType quads;
     private final Runnable preFlush;
     private final Runnable postFlush;
-    private BufferBuilder builder;
-    private @Nullable BufferBuilderRenderSink.RenderType activeRenderType;
+    private final MultiBufferSource.BufferSource multiBufferSource;
+    private VertexConsumer vertexConsumer;
+    private @Nullable VertexConsumerRenderSink.ConfiguredRenderType activeRenderType;
     private boolean active;
     private boolean canFlush;
     private float r = -1f, g, b, a;
@@ -40,34 +42,19 @@ public class BufferBuilderRenderSink implements RenderSink {
 
     // line state
     private float lastLineWidth = -1;
-    private int lastDepthFunc = -1;
+    private @Nullable DepthTestFunction lastDepthFunc = null;
 
-    public BufferBuilderRenderSink(final TypeFactory types) {
-        this(types, () -> {}, () -> {});
+    public VertexConsumerRenderSink(final TypeFactory types, final MultiBufferSource.BufferSource multiBufferSource) {
+        this(types, multiBufferSource, () -> { }, () -> { });
     }
 
-    public BufferBuilderRenderSink(final TypeFactory types, final Runnable preFlush, final Runnable postFlush) {
+    public VertexConsumerRenderSink(final TypeFactory types, final MultiBufferSource.BufferSource multiBufferSource, final Runnable preFlush, final Runnable postFlush) {
         this.lines = types.lines();
         this.lineLoop = types.linesLoop();
         this.quads = types.quads();
+        this.multiBufferSource = multiBufferSource;
         this.preFlush = preFlush;
         this.postFlush = postFlush;
-    }
-
-    static class LineWidth {
-        private static final boolean HAS_COMPATIBILITY = (GL11.glGetInteger(GL32.GL_CONTEXT_PROFILE_MASK) & GL32.GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) != 0;
-        private static float lineWidth = GL11.glGetInteger(GL11.GL_LINE_WIDTH);
-
-        static void set(final float width) {
-            if (HAS_COMPATIBILITY) {
-                if (lineWidth != width) {
-                    GL11.glLineWidth(width);
-                    lineWidth = width;
-                }
-            }
-            RenderSystem.lineWidth(width);
-        }
-
     }
 
     @Override
@@ -85,13 +72,12 @@ public class BufferBuilderRenderSink implements RenderSink {
         {
             if (line.lineWidth != this.lastLineWidth || line.renderType.depthFunc() != this.lastDepthFunc) {
                 this.flush();
+                this.lastLineWidth = line.lineWidth;
+                this.lastDepthFunc = line.renderType.depthFunc();
                 if (this.active && this.activeRenderType != null) {
                     this.canFlush = true;
-                    RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-                    this.builder = Tesselator.getInstance().begin(this.activeRenderType.mode, this.activeRenderType.format);
+                    this.vertexConsumer = this.activeRenderType.getBuffer(multiBufferSource, lastLineWidth, lastDepthFunc);
                 }
-                LineWidth.set(this.lastLineWidth = line.lineWidth);
-                RenderSystem.depthFunc(this.lastDepthFunc = line.renderType.depthFunc());
             }
             return true;
         }
@@ -108,19 +94,19 @@ public class BufferBuilderRenderSink implements RenderSink {
             throw new IllegalStateException("Tried to draw when not active");
         }
 
-        final BufferBuilder builder = this.builder;
+        final VertexConsumer consumer = this.vertexConsumer;
         if (this.activeRenderType == this.lineLoop) {
             // duplicate last
             if (this.canLoop) {
                 final Vector3f normal = this.activeRenderType.hasNormals ? this.computeNormal(this.loopX, this.loopY, this.loopZ, x, y, z) : null;
-                builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
-                if (normal != null) {
+                consumer.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
+                if(normal != null) {
                     // we need to compute normals pointing directly towards the screen
-                    builder.setNormal(normal.x(), normal.y(), normal.z());
+                    consumer.setNormal(normal.x(), normal.y(), normal.z());
                 }
-                builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
-                if (normal != null) {
-                    builder.setNormal(normal.x(), normal.y(), normal.z());
+                consumer.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
+                if(normal != null) {
+                    consumer.setNormal(normal.x(), normal.y(), normal.z());
                 }
             } else {
                 this.loopFirstX = (float) x;
@@ -135,13 +121,13 @@ public class BufferBuilderRenderSink implements RenderSink {
             // we buffer vertices so we can compute normals here
             if (this.canLoop) {
                 final Vector3f normal = this.activeRenderType.hasNormals ? this.computeNormal(this.loopX, this.loopY, this.loopZ, x, y, z) : null;
-                builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
-                if (normal != null) {
-                    builder.setNormal(normal.x(), normal.y(), normal.z());
+                consumer.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
+                if(normal != null) {
+                    consumer.setNormal(normal.x(), normal.y(), normal.z());
                 }
-                builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
-                if (normal != null) {
-                    builder.setNormal(normal.x(), normal.y(), normal.z());
+                consumer.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
+                if(normal != null) {
+                    consumer.setNormal(normal.x(), normal.y(), normal.z());
                 }
                 this.canLoop = false;
             } else {
@@ -151,7 +137,7 @@ public class BufferBuilderRenderSink implements RenderSink {
                 this.canLoop = true;
             }
         } else {
-            builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
+            consumer.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
         }
         return this;
     }
@@ -179,14 +165,14 @@ public class BufferBuilderRenderSink implements RenderSink {
         if (this.canLoop) {
             this.canLoop = false;
             final Vector3f normal = this.activeRenderType.hasNormals ? this.computeNormal(this.loopX, this.loopY, this.loopZ, this.loopFirstX, this.loopFirstY, this.loopFirstZ) : null;
-            this.builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
-            if (normal != null) {
-                this.builder.setNormal(normal.x(), normal.y(), normal.z());
+            this.vertexConsumer.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
+            if(normal != null) {
+                this.vertexConsumer.setNormal(normal.x(), normal.y(), normal.z());
             }
 
-            this.builder.addVertex(this.loopFirstX, this.loopFirstY, this.loopFirstZ).setColor(this.r, this.g, this.b, this.a);
-            if (normal != null) {
-                this.builder.setNormal(normal.x(), normal.y(), normal.z());
+            this.vertexConsumer.addVertex(this.loopFirstX, this.loopFirstY, this.loopFirstZ).setColor(this.r, this.g, this.b, this.a);
+            if(normal != null) {
+                this.vertexConsumer.setNormal(normal.x(), normal.y(), normal.z());
             }
         }
         return this;
@@ -227,18 +213,15 @@ public class BufferBuilderRenderSink implements RenderSink {
         this.canFlush = false;
         this.preFlush.run();
         try {
-            if (this.activeRenderType != null) {
-                RenderSystem.setShader(this.activeRenderType.shader);
-            }
-            BufferUploader.drawWithShader(this.builder.buildOrThrow());
+            multiBufferSource.endLastBatch();
         } finally {
             this.postFlush.run();
-            this.builder = null;
+            this.vertexConsumer = null;
             this.activeRenderType = null;
         }
     }
 
-    private void end(final RenderType renderType) {
+    private void end(final ConfiguredRenderType renderType) {
         if (!this.active) {
             throw new IllegalStateException("Could not exit " + renderType + ", was not active");
         }
@@ -248,60 +231,68 @@ public class BufferBuilderRenderSink implements RenderSink {
         this.active = false;
     }
 
-    private void transitionState(final RenderType renderType) {
+    private void transitionState(final ConfiguredRenderType renderType) {
         if (this.active) {
             throw new IllegalStateException("Tried to enter new state before previous operation had been completed");
         }
-        if (this.activeRenderType != null && renderType.mustFlushAfter(this.activeRenderType)) {
+        if (this.activeRenderType != null && renderType != this.activeRenderType) {
             this.flush();
         }
-        if (this.activeRenderType == null || this.activeRenderType.mode != renderType.mode) {
-            this.canFlush = true;
-            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            this.builder = Tesselator.getInstance().begin(renderType.mode, renderType.format);
-        }
+        this.canFlush = true;
+        this.vertexConsumer = renderType.getBuffer(multiBufferSource, lastLineWidth, lastDepthFunc);
         this.activeRenderType = renderType;
         this.active = true;
     }
 
-    public static class RenderType {
+    public static class ConfiguredRenderType {
 
-        private final VertexFormat.Mode mode;
-        private final VertexFormat format;
+        private final RenderPipeline.Snippet base;
+        private final String name;
         private final boolean hasNormals;
-        private final ShaderProgram shader;
 
-        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, final ShaderProgram shader) {
-            this.mode = mode;
-            this.format = format;
-            this.hasNormals = format.getElementAttributeNames().contains("Normal");
-            this.shader = shader;
-        }
+        private static final Map<Options, RenderType> BUILT_TYPES = new HashMap<>();
 
-        VertexFormat.Mode mode() {
-            return this.mode;
-        }
-
-        VertexFormat format() {
-            return this.format;
+        public ConfiguredRenderType(final RenderPipeline.Snippet base, final String name) {
+            this.base = base;
+            this.name = name;
+            this.hasNormals = base.vertexFormat().orElseThrow().getElementAttributeNames().contains("Normal");
         }
 
         boolean hasNormals() {
             return this.hasNormals;
         }
 
-        ShaderProgram shader() {
-            return this.shader;
+        VertexConsumer getBuffer(MultiBufferSource.BufferSource source, float lineWidth, DepthTestFunction depthFunc) {
+            return source.getBuffer(getBuiltType(lineWidth, depthFunc));
         }
 
-        boolean mustFlushAfter(final RenderType previous) {
-            return previous.mode != this.mode || !Objects.equals(previous.format, this.format);
+        private RenderType getBuiltType(float lineWidth, DepthTestFunction depthFunc) {
+            final var options = new Options(this, lineWidth, depthFunc);
+            return BUILT_TYPES.computeIfAbsent(options, key -> {
+                final var id = ResourceLocation.fromNamespaceAndPath("worldedit_cui", "configured/" + name + "/line_width-" + lineWidth + "/depth_func-" + depthFunc.ordinal());
+                final var pipeline = RenderPipeline.builder(key.type().base)
+                        .withDepthTestFunction(options.depthFunc)
+                        .withCull(false)
+                        .withLocation(id)
+                        .build();
+                        return RenderType.create(
+                                id.toString(),
+                                1536,
+                                pipeline,
+                                RenderType.CompositeState.builder()
+                                        .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.of(lineWidth)))
+                                        .setOutputState(RenderStateShard.TRANSLUCENT_TARGET)
+                                        .createCompositeState(false)
+                        );
+            });
         }
+
+        private record Options(ConfiguredRenderType type, float lineWidth, DepthTestFunction depthFunc) { }
     }
 
     public interface TypeFactory {
-        RenderType quads();
-        RenderType lines();
-        RenderType linesLoop();
+        ConfiguredRenderType quads();
+        ConfiguredRenderType lines();
+        ConfiguredRenderType linesLoop();
     }
 }

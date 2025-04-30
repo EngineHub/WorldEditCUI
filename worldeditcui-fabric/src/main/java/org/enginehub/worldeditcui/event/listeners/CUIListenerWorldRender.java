@@ -9,10 +9,8 @@
  */
 package org.enginehub.worldeditcui.event.listeners;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.CompiledShaderProgram;
 import net.minecraft.client.renderer.FogParameters;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -100,15 +98,6 @@ public class CUIListenerWorldRender
 			RenderSystem.setShaderFog(FogParameters.NO_FOG);
 			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
 			poseStack.pushMatrix();
-			RenderSystem.disableCull();
-			RenderSystem.enableBlend();
-			// RenderSystem.disableTexture();
-			RenderSystem.enableDepthTest();
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
-			RenderSystem.depthMask(true);
-			RenderSystem.lineWidth(LineStyle.DEFAULT_WIDTH);
-
-			final CompiledShaderProgram oldShader = RenderSystem.getShader();
 			try {
 				this.controller.renderSelections(this.ctx);
 				this.sink.flush();
@@ -116,12 +105,6 @@ public class CUIListenerWorldRender
 				this.controller.getDebugger().error("Error while attempting to render WorldEdit CUI", e);
 				this.invalidatePipeline();
 			}
-
-			RenderSystem.depthFunc(GL32.GL_LEQUAL);
-			RenderSystem.setShader(oldShader);
-			// RenderSystem.enableTexture();
-			RenderSystem.disableBlend();
-			RenderSystem.enableCull();
 			poseStack.popMatrix();
 			RenderSystem.setShaderFog(fogStart);
 			profiler.pop();

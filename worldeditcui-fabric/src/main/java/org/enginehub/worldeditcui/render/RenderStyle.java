@@ -9,6 +9,7 @@
  */
 package org.enginehub.worldeditcui.render;
 
+import com.mojang.blaze3d.platform.DepthTestFunction;
 import org.enginehub.worldeditcui.config.Colour;
 import org.lwjgl.opengl.GL32;
 
@@ -28,26 +29,26 @@ public interface RenderStyle
 		/**
 		 * Render type to draw lines regardless of depth
 		 */
-		ANY(GL32.GL_ALWAYS),
+		ANY(DepthTestFunction.NO_DEPTH_TEST),
 		
 		/**
 		 * Render type for "hidden" lines (under world geometry)
 		 */
-		HIDDEN(GL32.GL_GEQUAL),
+		HIDDEN(DepthTestFunction.GREATER_DEPTH_TEST),
 		
 		/**
 		 * Render type for visible lines (over world geometry) 
 		 */
-		VISIBLE(GL32.GL_LESS);
+		VISIBLE(DepthTestFunction.LEQUAL_DEPTH_TEST);
 		
-		final int depthFunc;
+		final DepthTestFunction depthFunc;
 
-		private RenderType(int depthFunc)
+		private RenderType(DepthTestFunction depthFunc)
 		{
 			this.depthFunc = depthFunc;
 		}
 
-		public int depthFunc()
+		public DepthTestFunction depthFunc()
 		{
 			return this.depthFunc;
 		}

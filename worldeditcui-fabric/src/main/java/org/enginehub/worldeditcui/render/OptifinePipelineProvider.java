@@ -12,8 +12,8 @@ package org.enginehub.worldeditcui.render;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.logging.LogUtils;
-import net.minecraft.client.renderer.CoreShaders;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.RenderPipelines;
 import org.slf4j.Logger;
 
 import java.lang.invoke.MethodHandle;
@@ -84,27 +84,27 @@ public final class OptifinePipelineProvider implements PipelineProvider {
         }
     }
 
-    public static class OptifineTypeFactory implements BufferBuilderRenderSink.TypeFactory {
+    public static class OptifineTypeFactory implements VertexConsumerRenderSink.TypeFactory {
         public static final OptifineTypeFactory INSTANCE = new OptifineTypeFactory();
 
-        private static final BufferBuilderRenderSink.RenderType QUADS = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR, CoreShaders.POSITION_COLOR);
-        private static final BufferBuilderRenderSink.RenderType LINES = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR, CoreShaders.POSITION_COLOR);
-        private static final BufferBuilderRenderSink.RenderType LINES_LOOP = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR, CoreShaders.POSITION_COLOR);
+        private static final VertexConsumerRenderSink.ConfiguredRenderType QUADS = new VertexConsumerRenderSink.ConfiguredRenderType(RenderPipelines.DEBUG_FILLED_SNIPPET, "optifine/quads");
+        private static final VertexConsumerRenderSink.ConfiguredRenderType LINES = new VertexConsumerRenderSink.ConfiguredRenderType(RenderPipelines.LINES_SNIPPET, "optifine/lines");
+        private static final VertexConsumerRenderSink.ConfiguredRenderType LINES_LOOP = new VertexConsumerRenderSink.ConfiguredRenderType(RenderPipelines.LINES_SNIPPET, "optifine/lines_loop");
 
         private OptifineTypeFactory() {}
 
         @Override
-        public BufferBuilderRenderSink.RenderType quads() {
+        public VertexConsumerRenderSink.ConfiguredRenderType quads() {
             return QUADS;
         }
 
         @Override
-        public BufferBuilderRenderSink.RenderType lines() {
+        public VertexConsumerRenderSink.ConfiguredRenderType lines() {
             return LINES;
         }
 
         @Override
-        public BufferBuilderRenderSink.RenderType linesLoop() {
+        public VertexConsumerRenderSink.ConfiguredRenderType linesLoop() {
             return LINES_LOOP;
         }
     }
@@ -137,8 +137,9 @@ public final class OptifinePipelineProvider implements PipelineProvider {
      */
     @Override
     public RenderSink provide() {
-        return new BufferBuilderRenderSink(
+        return new VertexConsumerRenderSink(
                 OptifineTypeFactory.INSTANCE, // optifine doesn't use the vanilla shader system?
+                Minecraft.getInstance().renderBuffers().bufferSource(),
                 () -> {
                     if (!this.available()) {
                         return;
