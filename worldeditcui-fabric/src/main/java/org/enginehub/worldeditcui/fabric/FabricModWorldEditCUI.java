@@ -100,7 +100,6 @@ public final class FabricModWorldEditCUI implements ModInitializer {
                     RenderSystem.getModelViewStack().pushMatrix();
                     RenderSystem.getModelViewStack().mul(ctx.matrixStack().last().pose());
                     // RenderSystem.applyModelViewMatrix();
-                    // TODO: use translucent buffer?
                     this.onPostRenderEntities(ctx);
                 } finally {
                     RenderSystem.getModelViewStack().popMatrix();
