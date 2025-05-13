@@ -39,9 +39,9 @@ spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.3"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.4"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.3"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.4"
 version.ref = "cuiProtocol"
