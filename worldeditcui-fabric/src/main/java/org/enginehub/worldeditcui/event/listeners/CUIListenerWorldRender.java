@@ -9,7 +9,8 @@
  */
 package org.enginehub.worldeditcui.event.listeners;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.DestFactor;
+import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.CompiledShaderProgram;
@@ -104,7 +105,7 @@ public class CUIListenerWorldRender
 			RenderSystem.enableBlend();
 			// RenderSystem.disableTexture();
 			RenderSystem.enableDepthTest();
-			RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+			RenderSystem.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
 			RenderSystem.depthMask(true);
 			RenderSystem.lineWidth(LineStyle.DEFAULT_WIDTH);
 
