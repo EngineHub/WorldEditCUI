@@ -37,7 +37,7 @@ public final class CUIRenderContext implements RenderSink {
     }
 
     public void applyMatrices() {
-        RenderSystem.applyModelViewMatrix();
+        // RenderSystem.applyModelViewMatrix();
     }
 
     public float dt() {

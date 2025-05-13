@@ -99,7 +99,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
                 try {
                     RenderSystem.getModelViewStack().pushMatrix();
                     RenderSystem.getModelViewStack().mul(ctx.matrixStack().last().pose());
-                    RenderSystem.applyModelViewMatrix();
+                    // RenderSystem.applyModelViewMatrix();
                     ctx.worldRenderer().getTranslucentTarget().bindWrite(false);
                     this.onPostRenderEntities(ctx);
                 } finally {
@@ -113,11 +113,11 @@ public final class FabricModWorldEditCUI implements ModInitializer {
                 try {
                     RenderSystem.getModelViewStack().pushMatrix();
                     RenderSystem.getModelViewStack().mul(ctx.matrixStack().last().pose());
-                    RenderSystem.applyModelViewMatrix();
+                    // RenderSystem.applyModelViewMatrix();
                     this.onPostRenderEntities(ctx);
                 } finally {
                     RenderSystem.getModelViewStack().popMatrix();
-                    RenderSystem.applyModelViewMatrix();
+                    // RenderSystem.applyModelViewMatrix();
                 }
             }
         });
@@ -126,7 +126,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     private void onTick(final Minecraft mc) {
         final CUIConfiguration config = this.controller.getConfiguration();
         final boolean inGame = mc.player != null;
-        final boolean clock = mc.getTimer().getGameTimeDeltaPartialTick(false) > 0;
+        final boolean clock = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false) > 0;
 
         if (inGame && mc.screen == null) {
             while (this.keyBindToggleUI.consumeClick()) {
