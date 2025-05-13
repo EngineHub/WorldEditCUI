@@ -9,12 +9,13 @@
  */
 package org.enginehub.worldeditcui.render;
 
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.ShaderProgram;
+import net.minecraft.client.renderer.MultiBufferSource;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -228,7 +229,7 @@ public class BufferBuilderRenderSink implements RenderSink {
         this.preFlush.run();
         try {
             if (this.activeRenderType != null) {
-                RenderSystem.setShader(this.activeRenderType.shader);
+                RenderSystem.setShader(this.activeRenderType.renderPipeline);
             }
             BufferUploader.drawWithShader(this.builder.buildOrThrow());
         } finally {
@@ -269,13 +270,13 @@ public class BufferBuilderRenderSink implements RenderSink {
         private final VertexFormat.Mode mode;
         private final VertexFormat format;
         private final boolean hasNormals;
-        private final ShaderProgram shader;
+        private final RenderPipeline renderPipeline;
 
-        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, final ShaderProgram shader) {
+        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, @Nullable final RenderPipeline renderPipeline) {
             this.mode = mode;
             this.format = format;
             this.hasNormals = format.getElementAttributeNames().contains("Normal");
-            this.shader = shader;
+            this.renderPipeline = renderPipeline;
         }
 
         VertexFormat.Mode mode() {
@@ -290,8 +291,9 @@ public class BufferBuilderRenderSink implements RenderSink {
             return this.hasNormals;
         }
 
-        ShaderProgram shader() {
-            return this.shader;
+        @Nullable
+        RenderPipeline shader() {
+            return this.renderPipeline;
         }
 
         boolean mustFlushAfter(final RenderType previous) {
