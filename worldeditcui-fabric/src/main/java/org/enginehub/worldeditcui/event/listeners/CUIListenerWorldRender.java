@@ -9,11 +9,12 @@
  */
 package org.enginehub.worldeditcui.event.listeners;
 
+import com.mojang.blaze3d.opengl.GlConst;
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.DestFactor;
 import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.CompiledShaderProgram;
 import net.minecraft.client.renderer.FogParameters;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -101,15 +102,18 @@ public class CUIListenerWorldRender
 			RenderSystem.setShaderFog(FogParameters.NO_FOG);
 			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
 			poseStack.pushMatrix();
-			RenderSystem.disableCull();
-			RenderSystem.enableBlend();
+			GlStateManager._disableCull();
+			GlStateManager._enableBlend();
 			// RenderSystem.disableTexture();
-			RenderSystem.enableDepthTest();
-			RenderSystem.blendFunc(SourceFactor.SRC_ALPHA, DestFactor.ONE_MINUS_SRC_ALPHA);
-			RenderSystem.depthMask(true);
+			GlStateManager._enableDepthTest();
+			GlStateManager._blendFuncSeparate(
+					GlConst.toGl(SourceFactor.SRC_ALPHA),
+					GlConst.toGl(DestFactor.ONE_MINUS_SRC_ALPHA),
+					GlConst.toGl(SourceFactor.SRC_ALPHA),
+					GlConst.toGl(DestFactor.ONE_MINUS_SRC_ALPHA));
+			GlStateManager._depthMask(true);
 			RenderSystem.lineWidth(LineStyle.DEFAULT_WIDTH);
 
-			final CompiledShaderProgram oldShader = RenderSystem.getShader();
 			try {
 				this.controller.renderSelections(this.ctx);
 				this.sink.flush();
@@ -118,11 +122,10 @@ public class CUIListenerWorldRender
 				this.invalidatePipeline();
 			}
 
-			RenderSystem.depthFunc(GL32.GL_LEQUAL);
-			RenderSystem.setShader(oldShader);
+			GlStateManager._depthFunc(GL32.GL_LEQUAL);
 			// RenderSystem.enableTexture();
-			RenderSystem.disableBlend();
-			RenderSystem.enableCull();
+			GlStateManager._disableBlend();
+			GlStateManager._enableCull();
 			poseStack.popMatrix();
 			RenderSystem.setShaderFog(fogStart);
 			profiler.pop();

@@ -9,18 +9,30 @@
  */
 package org.enginehub.worldeditcui.render;
 
+import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 
 public final class VanillaPipelineProvider implements PipelineProvider {
 
     public static class DefaultTypeFactory implements BufferBuilderRenderSink.TypeFactory {
         public static final DefaultTypeFactory INSTANCE = new DefaultTypeFactory();
-
-        private static final BufferBuilderRenderSink.RenderType QUADS = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR, null);
-        private static final BufferBuilderRenderSink.RenderType LINES = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL, RenderPipelines.LINES);
-        private static final BufferBuilderRenderSink.RenderType LINES_LOOP = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL, RenderPipelines.LINES);
+        private static final BufferBuilderRenderSink.RenderType QUADS = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR,
+                RenderType.create("quads", 1536, false, true,
+                            RenderPipeline.builder(RenderPipeline.builder(RenderPipelines.MATRICES_COLOR_SNIPPET)
+                                        .withVertexShader("core/position_color")
+                                        .withFragmentShader("core/position_color")
+                                        .withBlend(BlendFunction.TRANSLUCENT)
+                                        .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
+                                        .buildSnippet())
+                                    .withLocation("pipeline/wecui_quads").withCull(false).build(),
+                        RenderType.CompositeState.builder().createCompositeState(false)
+        ));
+        private static final BufferBuilderRenderSink.RenderType LINES = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL, RenderType.LINES);
+        private static final BufferBuilderRenderSink.RenderType LINES_LOOP = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL, RenderType.LINES);
 
         private DefaultTypeFactory() {}
 
