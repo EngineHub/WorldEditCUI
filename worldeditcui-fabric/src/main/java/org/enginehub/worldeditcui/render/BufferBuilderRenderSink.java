@@ -9,13 +9,12 @@
  */
 package org.enginehub.worldeditcui.render;
 
+import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.MultiBufferSource;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
@@ -92,7 +91,7 @@ public class BufferBuilderRenderSink implements RenderSink {
                     this.builder = Tesselator.getInstance().begin(this.activeRenderType.mode, this.activeRenderType.format);
                 }
                 LineWidth.set(this.lastLineWidth = line.lineWidth);
-                RenderSystem.depthFunc(this.lastDepthFunc = line.renderType.depthFunc());
+                GlStateManager._depthFunc(this.lastDepthFunc = line.renderType.depthFunc());
             }
             return true;
         }
@@ -228,10 +227,10 @@ public class BufferBuilderRenderSink implements RenderSink {
         this.canFlush = false;
         this.preFlush.run();
         try {
-            if (this.activeRenderType != null) {
-                RenderSystem.setShader(this.activeRenderType.renderPipeline);
+            if (this.activeRenderType == null) {
+                throw new IllegalStateException("Active type cannot be null");
             }
-            BufferUploader.drawWithShader(this.builder.buildOrThrow());
+            this.activeRenderType.type.draw(this.builder.buildOrThrow());
         } finally {
             this.postFlush.run();
             this.builder = null;
@@ -270,13 +269,13 @@ public class BufferBuilderRenderSink implements RenderSink {
         private final VertexFormat.Mode mode;
         private final VertexFormat format;
         private final boolean hasNormals;
-        private final RenderPipeline renderPipeline;
+        private final net.minecraft.client.renderer.RenderType type;
 
-        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, @Nullable final RenderPipeline renderPipeline) {
+        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, @Nullable final net.minecraft.client.renderer.RenderType renderPipeline) {
             this.mode = mode;
             this.format = format;
             this.hasNormals = format.getElementAttributeNames().contains("Normal");
-            this.renderPipeline = renderPipeline;
+            this.type = renderPipeline;
         }
 
         VertexFormat.Mode mode() {
@@ -289,11 +288,6 @@ public class BufferBuilderRenderSink implements RenderSink {
 
         boolean hasNormals() {
             return this.hasNormals;
-        }
-
-        @Nullable
-        RenderPipeline shader() {
-            return this.renderPipeline;
         }
 
         boolean mustFlushAfter(final RenderType previous) {
