@@ -1,0 +1,4 @@
+accessWidener v2 named
+
+# fogRenderer
+accessible field net/minecraft/client/renderer/GameRenderer fogRenderer Lnet/minecraft/client/renderer/fog/FogRenderer;

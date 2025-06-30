@@ -31,6 +31,8 @@ loom {
             )
         }
     }
+
+    accessWidenerPath.set(project.file("src/main/resources/worldeditcui.accesswidener"))
 }
 
 val fabricApi by configurations.creating

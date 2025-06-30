@@ -135,7 +135,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
 
             while (this.keyBindClearSel.consumeClick()) {
                 if (mc.player != null) {
-                    mc.player.connection.sendUnsignedCommand("/sel");
+                    mc.player.connection.sendUnattendedCommand("/sel", null);
                 }
 
                 if (config.isClearAllOnKey()) {
@@ -158,7 +158,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
                 this.helo(mc.getConnection());
                 this.delayedHelo = FabricModWorldEditCUI.DELAYED_HELO_TICKS;
                 if (mc.player != null && config.isPromiscuous()) {
-                    mc.player.connection.sendUnsignedCommand("we cui"); // Tricks WE to send the current selection
+                    mc.player.connection.sendUnattendedCommand("we cui", null); // Tricks WE to send the current selection
                 }
             }
 

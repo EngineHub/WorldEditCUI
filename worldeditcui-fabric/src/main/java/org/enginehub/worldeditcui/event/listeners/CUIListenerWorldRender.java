@@ -9,13 +9,14 @@
  */
 package org.enginehub.worldeditcui.event.listeners;
 
+import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.platform.DestFactor;
 import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.FogParameters;
+import net.minecraft.client.renderer.fog.FogRenderer;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.enginehub.worldeditcui.WorldEditCUI;
@@ -98,8 +99,8 @@ public class CUIListenerWorldRender
 			final ProfilerFiller profiler = Profiler.get();
 			profiler.push("worldeditcui");
 			this.ctx.init(new Vector3(this.minecraft.gameRenderer.getMainCamera().getPosition()), partialTicks, sink);
-			final FogParameters fogStart = RenderSystem.getShaderFog();
-			RenderSystem.setShaderFog(FogParameters.NO_FOG);
+			final GpuBufferSlice fogStart = RenderSystem.getShaderFog();
+			RenderSystem.setShaderFog(this.minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
 			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
 			poseStack.pushMatrix();
 			GlStateManager._disableCull();

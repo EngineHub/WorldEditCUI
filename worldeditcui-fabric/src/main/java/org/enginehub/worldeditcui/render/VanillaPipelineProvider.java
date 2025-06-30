@@ -22,7 +22,7 @@ public final class VanillaPipelineProvider implements PipelineProvider {
         public static final DefaultTypeFactory INSTANCE = new DefaultTypeFactory();
         private static final BufferBuilderRenderSink.RenderType QUADS = new BufferBuilderRenderSink.RenderType(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR,
                 RenderType.create("quads", 1536, false, true,
-                            RenderPipeline.builder(RenderPipeline.builder(RenderPipelines.MATRICES_COLOR_SNIPPET)
+                            RenderPipeline.builder(RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
                                         .withVertexShader("core/position_color")
                                         .withFragmentShader("core/position_color")
                                         .withBlend(BlendFunction.TRANSLUCENT)

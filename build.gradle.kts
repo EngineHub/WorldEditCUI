@@ -10,7 +10,7 @@ plugins {
 
 allprojects {
     group = "org.enginehub.worldeditcui"
-    version = "${rootProject.libs.versions.minecraft.get()}+02-SNAPSHOT"
+    version = "${rootProject.libs.versions.minecraft.get()}+01-SNAPSHOT"
 
     repositories {
         // mirrors:
