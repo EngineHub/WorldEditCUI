@@ -2,7 +2,7 @@
     "worldeditcui.options.title": "Настройки WorldEditCUI",
     "key.worldeditcui.toggle": "Переключить видимость CUI",
     "key.worldeditcui.clear": "Очистить выделение WorldEdit",
-    "key.categories.worldeditcui": "WorldEditCUI",
+    "key.category.worldeditcui.general": "WorldEditCUI",
     "worldeditcui.color.cuboidedge": "Цвет границ кубоида",
     "worldeditcui.color.cuboidgrid": "Цвет сетки кубоида",
     "worldeditcui.color.cuboidpoint1": "Цвет первой точки кубоида",

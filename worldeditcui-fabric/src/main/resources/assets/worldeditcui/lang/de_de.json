@@ -3,7 +3,7 @@
     "key.worldeditcui.toggle": "CUI Sichtbarkeit An/Aus",
     "key.worldeditcui.clear": "WorldEdit Auswahl aufheben",
     "key.worldeditcui.chunk": "Chunkgrenzen An/Aus",
-    "key.categories.worldeditcui": "WorldEditCUI",
+    "key.category.worldeditcui.general": "WorldEditCUI",
     "worldeditcui.color.cuboidedge": "Quader Randfarbe",
     "worldeditcui.color.cuboidedge.tooltip": "Wähle die Farbe für den Rand einer Quader-Region aus",
     "worldeditcui.color.cuboidgrid": "Quader Rasterfarbe",

@@ -2,7 +2,7 @@
     "worldeditcui.options.title": "WorldEditCUI选项",
     "key.worldeditcui.toggle": "显示/隐藏 WECUI",
     "key.worldeditcui.clear": "取消WorldEdit选择区域",
-    "key.categories.worldeditcui": "WorldEditCUI按键设置",
+    "key.category.worldeditcui.general": "WorldEditCUI按键设置",
     "worldeditcui.color.cuboidedge": "长方体边缘颜色",
     "worldeditcui.color.cuboidgrid": "长方体网格颜色",
     "worldeditcui.color.cuboidpoint1": "长方体第一点颜色",

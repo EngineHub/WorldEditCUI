@@ -2,7 +2,7 @@
     "worldeditcui.options.title": "WorldEditCUI Opties",
     "key.worldeditcui.toggle": "CUI zichtbaarheid omschakelen",
     "key.worldeditcui.clear": "WorldEdit selectie verwijderen",
-    "key.categories.worldeditcui": "WorldEditCUI",
+    "key.category.worldeditcui.general": "WorldEditCUI",
     "worldeditcui.color.cuboidedge": "Randkleur Balk",
     "worldeditcui.color.cuboidgrid": "Roosterkleur Balk",
     "worldeditcui.color.cuboidpoint1": "Eerste punt kleur Balk",

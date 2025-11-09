@@ -3,7 +3,7 @@
     "key.worldeditcui.toggle": "Toggle CUI visibility",
     "key.worldeditcui.clear": "Clear WorldEdit selection",
     "key.worldeditcui.chunk": "Toggle Chunk Border",
-    "key.categories.worldeditcui": "WorldEditCUI",
+    "key.category.worldeditcui.general": "WorldEditCUI",
     "worldeditcui.color.cuboidedge": "Cuboid Edge Color",
     "worldeditcui.color.cuboidedge.tooltip": "Select the color for the edge of a cuboid region",
     "worldeditcui.color.cuboidgrid": "Cuboid Grid Color",
