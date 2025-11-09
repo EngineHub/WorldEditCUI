@@ -32,10 +32,6 @@ loom {
         }
     }
 
-    mixin {
-        defaultRefmapName.set("worldeditcui-refmap.json")
-    }
-
     accessWidenerPath.set(project.file("src/main/resources/worldeditcui.accesswidener"))
 }
 

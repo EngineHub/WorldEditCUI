@@ -15,6 +15,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -23,7 +25,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import org.enginehub.worldeditcui.WorldEditCUI;
-import org.enginehub.worldeditcui.callback.WorldRenderCallback;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerChannel;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerWorldRender;
@@ -32,7 +33,6 @@ import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 import org.enginehub.worldeditcui.render.OptifinePipelineProvider;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.VanillaPipelineProvider;
-import org.enginehub.worldeditcui.render.WecuiRenderContext;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
@@ -71,6 +71,8 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     private boolean visible = true;
     private int delayedHelo = 0;
 
+    private float lastPartialTicks = 0.0f;
+
     /**
      * Register a key binding
      *
@@ -96,31 +98,20 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register(this::onGameInitDone);
         CUINetworking.subscribeToCuiPacket(this::onPluginMessage);
         ClientPlayConnectionEvents.JOIN.register(this::onJoinGame);
-        WorldRenderCallback.AFTER_TRANSLUCENT.register(ctx -> {
-            if (ctx.advancedTranslucency()) {
-                try {
-                    RenderSystem.getModelViewStack().pushMatrix();
-                    RenderSystem.getModelViewStack().mul(ctx.poseStack().last().pose());
-                    // RenderSystem.applyModelViewMatrix();
-                    //ctx.worldRenderer().getTranslucentTarget().bindWrite(false);
-                    this.onPostRenderEntities(ctx);
-                } finally {
-                    //Minecraft.getInstance().getMainRenderTarget().bindWrite(false);
-                    RenderSystem.getModelViewStack().popMatrix();
-                }
-            }
+        WorldRenderEvents.END_EXTRACTION.register(ctx -> {
+            // MC now handles this separately to the actual render, due to it occurring across threads.
+            // We need to store this for later use during actual render.
+            lastPartialTicks = ctx.tickCounter().getRealtimeDeltaTicks();
         });
-        WorldRenderCallback.LAST.register(ctx -> {
-            if (!ctx.advancedTranslucency()) {
-                try {
-                    RenderSystem.getModelViewStack().pushMatrix();
-                    RenderSystem.getModelViewStack().mul(ctx.poseStack().last().pose());
-                    // RenderSystem.applyModelViewMatrix();
-                    this.onPostRenderEntities(ctx);
-                } finally {
-                    RenderSystem.getModelViewStack().popMatrix();
-                    // RenderSystem.applyModelViewMatrix();
-                }
+        WorldRenderEvents.END_MAIN.register(ctx -> {
+            try {
+                RenderSystem.getModelViewStack().pushMatrix();
+                RenderSystem.getModelViewStack().mul(ctx.matrices().last().pose());
+                // RenderSystem.applyModelViewMatrix();
+                this.onPostRenderEntities(ctx);
+            } finally {
+                RenderSystem.getModelViewStack().popMatrix();
+                // RenderSystem.applyModelViewMatrix();
             }
         });
     }
@@ -194,9 +185,9 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         this.helo(handler);
     }
 
-    public void onPostRenderEntities(final WecuiRenderContext ctx) {
+    public void onPostRenderEntities(final WorldRenderContext ctx) {
         if (this.visible) {
-            this.worldRenderListener.onRender(ctx.delta().getRealtimeDeltaTicks());
+            this.worldRenderListener.onRender(lastPartialTicks);
         }
     }
 
