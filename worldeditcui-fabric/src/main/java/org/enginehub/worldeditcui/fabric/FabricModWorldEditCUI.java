@@ -9,22 +9,21 @@
  */
 package org.enginehub.worldeditcui.fabric;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 import org.enginehub.worldeditcui.WorldEditCUI;
+import org.enginehub.worldeditcui.callback.WorldRenderCallback;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerChannel;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerWorldRender;
@@ -33,6 +32,7 @@ import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 import org.enginehub.worldeditcui.render.OptifinePipelineProvider;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.VanillaPipelineProvider;
+import org.enginehub.worldeditcui.render.WecuiRenderContext;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
@@ -49,10 +49,12 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     public static final String MOD_ID = "worldeditcui";
     private static FabricModWorldEditCUI instance;
 
-    private static final String KEYBIND_CATEGORY_WECUI = "key.categories.worldeditcui";
-    private final KeyMapping keyBindToggleUI = key("toggle", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN);
-    private final KeyMapping keyBindClearSel = key("clear", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN);
-    private final KeyMapping keyBindChunkBorder = key("chunk", InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN);
+    private static final KeyMapping.Category KEYBIND_CATEGORY_WECUI
+            = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(MOD_ID, "general"));
+
+    private final KeyMapping keyBindToggleUI = key("toggle", GLFW.GLFW_KEY_UNKNOWN);
+    private final KeyMapping keyBindClearSel = key("clear", GLFW.GLFW_KEY_UNKNOWN);
+    private final KeyMapping keyBindChunkBorder = key("chunk", GLFW.GLFW_KEY_UNKNOWN);
 
     private static final List<PipelineProvider> RENDER_PIPELINES = List.of(
             new OptifinePipelineProvider(),
@@ -73,12 +75,12 @@ public final class FabricModWorldEditCUI implements ModInitializer {
      * Register a key binding
      *
      * @param name id, will be used as a localization key under {@code key.worldeditcui.<name>}
-     * @param type type
      * @param code default value
      * @return new, registered keybinding in the mod category
      */
-    private static KeyMapping key(final String name, final InputConstants.Type type, final int code) {
-        return KeyBindingHelper.registerKeyBinding(new KeyMapping("key." + MOD_ID + '.' + name, type, code, KEYBIND_CATEGORY_WECUI));
+    private static KeyMapping key(final String name, final int code) {
+        return KeyBindingHelper.registerKeyBinding(
+                new KeyMapping("key." + MOD_ID + '.' + name, code, KEYBIND_CATEGORY_WECUI));
     }
 
     @Override
@@ -94,11 +96,11 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register(this::onGameInitDone);
         CUINetworking.subscribeToCuiPacket(this::onPluginMessage);
         ClientPlayConnectionEvents.JOIN.register(this::onJoinGame);
-        WorldRenderEvents.AFTER_TRANSLUCENT.register(ctx -> {
+        WorldRenderCallback.AFTER_TRANSLUCENT.register(ctx -> {
             if (ctx.advancedTranslucency()) {
                 try {
                     RenderSystem.getModelViewStack().pushMatrix();
-                    RenderSystem.getModelViewStack().mul(ctx.matrixStack().last().pose());
+                    RenderSystem.getModelViewStack().mul(ctx.poseStack().last().pose());
                     // RenderSystem.applyModelViewMatrix();
                     //ctx.worldRenderer().getTranslucentTarget().bindWrite(false);
                     this.onPostRenderEntities(ctx);
@@ -108,11 +110,11 @@ public final class FabricModWorldEditCUI implements ModInitializer {
                 }
             }
         });
-        WorldRenderEvents.LAST.register(ctx -> {
+        WorldRenderCallback.LAST.register(ctx -> {
             if (!ctx.advancedTranslucency()) {
                 try {
                     RenderSystem.getModelViewStack().pushMatrix();
-                    RenderSystem.getModelViewStack().mul(ctx.matrixStack().last().pose());
+                    RenderSystem.getModelViewStack().mul(ctx.poseStack().last().pose());
                     // RenderSystem.applyModelViewMatrix();
                     this.onPostRenderEntities(ctx);
                 } finally {
@@ -192,9 +194,9 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         this.helo(handler);
     }
 
-    public void onPostRenderEntities(final WorldRenderContext ctx) {
+    public void onPostRenderEntities(final WecuiRenderContext ctx) {
         if (this.visible) {
-            this.worldRenderListener.onRender(ctx.tickCounter().getRealtimeDeltaTicks());
+            this.worldRenderListener.onRender(ctx.delta().getRealtimeDeltaTicks());
         }
     }
 

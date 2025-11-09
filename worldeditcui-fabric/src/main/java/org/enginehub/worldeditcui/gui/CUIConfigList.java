@@ -28,9 +28,11 @@ import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FormattedCharSequence;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.config.Colour;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.Objects;
 
 public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.ConfigEntry> {
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -87,27 +89,27 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
         }
 
         @Override
-        public void render(GuiGraphics gfx, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            super.render(gfx, index, top, left, width, height, mouseX, mouseY, isMouseOver, partialTick);
-
-            this.toggleBotton.setX(left + 105);
-            this.toggleBotton.setY(top);
-            this.toggleBotton.render(gfx, mouseX, mouseY, partialTick);
-        }
-
-        @Override
-        public List<? extends GuiEventListener> children() {
+        public @NotNull List<? extends GuiEventListener> children() {
             return ImmutableList.of(this.resetButton, this.toggleBotton);
         }
 
         @Override
-        public List<? extends NarratableEntry> narratables() {
+        public @NotNull List<? extends NarratableEntry> narratables() {
             return ImmutableList.of(this.resetButton, this.toggleBotton);
         }
 
         @Override
         protected void updateFromConfig() {
             this.toggleBotton.setValue((Boolean)configuration.getConfigArray().get(tag));
+        }
+
+        @Override
+        public void renderContent(GuiGraphics gfx, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+            super.renderContent(gfx, mouseX, mouseY, isMouseOver, partialTick);
+
+            this.toggleBotton.setX(getRowLeft() + 105);
+            this.toggleBotton.setY(getY());
+            this.toggleBotton.render(gfx, mouseX, mouseY, partialTick);
         }
     }
 
@@ -127,7 +129,7 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
                     configuration.changeValue(tag, tested);
                 }
             });
-            textField.setFormatter((string, integer) -> {
+            textField.addFormatter((string, integer) -> {
                 final String colorSource = textField.getValue();
                 if (colorSource.length() != 9) {
                     return FormattedCharSequence.forward(string, invalidFormat);
@@ -155,26 +157,26 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
         }
 
         @Override
-        public void render(GuiGraphics gfx, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            super.render(gfx, index, top, left, width, height, mouseX, mouseY, isMouseOver, partialTick);
-            this.textField.setX(left + 105);
-            this.textField.setY(top);
-            this.textField.render(gfx, mouseX, mouseY, partialTick);
-        }
-
-        @Override
-        public List<? extends GuiEventListener> children() {
+        public @NotNull List<? extends GuiEventListener> children() {
             return ImmutableList.of(this.resetButton, this.textField);
         }
 
         @Override
-        public List<? extends NarratableEntry> narratables() {
+        public @NotNull List<? extends NarratableEntry> narratables() {
             return ImmutableList.of(this.resetButton, this.textField);
         }
 
         @Override
         protected void updateFromConfig() {
             this.textField.setValue(((Colour)configuration.getConfigArray().get(tag)).hexString());
+        }
+
+        @Override
+        public void renderContent(GuiGraphics gfx, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+            super.renderContent(gfx, mouseX, mouseY, isMouseOver, partialTick);
+            this.textField.setX(getRowLeft() + 105);
+            this.textField.setY(getY());
+            this.textField.render(gfx, mouseX, mouseY, partialTick);
         }
     }
 
@@ -186,13 +188,14 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
         public ConfigEntry(String tag) {
             this.tag = tag;
 
-            this.resetButton = Button.builder(Component.translatable("controls.reset"), (button) -> {
+            this.resetButton = Button.builder(Component.translatable("controls.reset"), button -> {
                 configuration.changeValue(tag, configuration.getDefaultValue(tag));
                 updateFromConfig();
             }).bounds(0, 0, 50, BUTTON_HEIGHT).build();
 
-            textField = new StringWidget(configuration.getDescription(tag), minecraft.font);
-            textField.alignLeft();
+
+            textField = new StringWidget(Objects.requireNonNull(configuration.getDescription(tag)), minecraft.font);
+            //textField.alignLeft();
             Component tooltip = configuration.getTooltip(tag);
             if (tooltip != null) {
                 textField.setTooltip(Tooltip.create(tooltip));
@@ -200,7 +203,11 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
         }
 
         @Override
-        public void render(GuiGraphics gfx, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+        public void renderContent(GuiGraphics gfx, int mouseX, int mouseY, boolean hovered, float partialTick) {
+            // new API handles entry position internally
+            int left = this.getX();
+            int top = this.getY(); // or getRowTop()
+
             int textLeft = left + 90 - maxNameWidth;
 
             this.textField.setX(textLeft);

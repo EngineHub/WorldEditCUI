@@ -2,7 +2,7 @@
     "worldeditcui.options.title": "Options WorldEditCUI",
     "key.worldeditcui.toggle": "Bascule Visibilité du CUI",
     "key.worldeditcui.clear": "Effacer la sélection WorldEdit",
-    "key.categories.worldeditcui": "WorldEditCUI",
+    "key.category.worldeditcui.general": "WorldEditCUI",
     "worldeditcui.color.cuboidedge": "Couleur des bordures du Cuboïde",
     "worldeditcui.color.cuboidgrid": "Couleur de la grille du Cuboïde",
     "worldeditcui.color.cuboidpoint1": "Couleur du premier point du Cuboïde",
