@@ -10,7 +10,6 @@
 package org.enginehub.worldeditcui.render;
 
 import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -28,7 +27,7 @@ public class BufferBuilderRenderSink implements RenderSink {
     private final RenderType quads;
     private final Runnable preFlush;
     private final Runnable postFlush;
-    private static BufferBuilder builder;
+    private BufferBuilder builder;
     private @Nullable BufferBuilderRenderSink.RenderType activeRenderType;
     private boolean active;
     private boolean canFlush;
@@ -58,14 +57,11 @@ public class BufferBuilderRenderSink implements RenderSink {
         private static float lineWidth = GL11.glGetInteger(GL11.GL_LINE_WIDTH);
 
         public static void set(final float width) {
-            if (HAS_COMPATIBILITY) {
-                if (lineWidth != width) {
-                    GL11.glLineWidth(width);
-                    lineWidth = width;
-                }
+            if (HAS_COMPATIBILITY && lineWidth != width) {
+                GL11.glLineWidth(width);
             }
 
-            builder.setLineWidth(width);
+            lineWidth = width;
         }
 
     }
@@ -112,12 +108,12 @@ public class BufferBuilderRenderSink implements RenderSink {
             // duplicate last
             if (this.canLoop) {
                 final Vector3f normal = this.activeRenderType.hasNormals ? this.computeNormal(this.loopX, this.loopY, this.loopZ, x, y, z) : null;
-                builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
+                builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a).setLineWidth(LineWidth.lineWidth);
                 if (normal != null) {
                     // we need to compute normals pointing directly towards the screen
                     builder.setNormal(normal.x(), normal.y(), normal.z());
                 }
-                builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
+                builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a).setLineWidth(LineWidth.lineWidth);
                 if (normal != null) {
                     builder.setNormal(normal.x(), normal.y(), normal.z());
                 }
@@ -134,11 +130,11 @@ public class BufferBuilderRenderSink implements RenderSink {
             // we buffer vertices so we can compute normals here
             if (this.canLoop) {
                 final Vector3f normal = this.activeRenderType.hasNormals ? this.computeNormal(this.loopX, this.loopY, this.loopZ, x, y, z) : null;
-                builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
+                builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a).setLineWidth(LineWidth.lineWidth);
                 if (normal != null) {
                     builder.setNormal(normal.x(), normal.y(), normal.z());
                 }
-                builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
+                builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a).setLineWidth(LineWidth.lineWidth);
                 if (normal != null) {
                     builder.setNormal(normal.x(), normal.y(), normal.z());
                 }
@@ -150,7 +146,7 @@ public class BufferBuilderRenderSink implements RenderSink {
                 this.canLoop = true;
             }
         } else {
-            builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a);
+            builder.addVertex((float) x, (float) y, (float) z).setColor(this.r, this.g, this.b, this.a).setLineWidth(LineWidth.lineWidth);
         }
         return this;
     }
@@ -178,12 +174,12 @@ public class BufferBuilderRenderSink implements RenderSink {
         if (this.canLoop) {
             this.canLoop = false;
             final Vector3f normal = this.activeRenderType.hasNormals ? this.computeNormal(this.loopX, this.loopY, this.loopZ, this.loopFirstX, this.loopFirstY, this.loopFirstZ) : null;
-            this.builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a);
+            this.builder.addVertex(this.loopX, this.loopY, this.loopZ).setColor(this.r, this.g, this.b, this.a).setLineWidth(LineWidth.lineWidth);
             if (normal != null) {
                 this.builder.setNormal(normal.x(), normal.y(), normal.z());
             }
 
-            this.builder.addVertex(this.loopFirstX, this.loopFirstY, this.loopFirstZ).setColor(this.r, this.g, this.b, this.a);
+            this.builder.addVertex(this.loopFirstX, this.loopFirstY, this.loopFirstZ).setColor(this.r, this.g, this.b, this.a).setLineWidth(LineWidth.lineWidth);
             if (normal != null) {
                 this.builder.setNormal(normal.x(), normal.y(), normal.z());
             }
