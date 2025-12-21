@@ -10,7 +10,6 @@
 package org.enginehub.worldeditcui.render;
 
 import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
@@ -29,7 +28,7 @@ public class BufferBuilderRenderSink implements RenderSink {
     private final RenderType quads;
     private final Runnable preFlush;
     private final Runnable postFlush;
-    private BufferBuilder builder;
+    private static BufferBuilder builder;
     private @Nullable BufferBuilderRenderSink.RenderType activeRenderType;
     private boolean active;
     private boolean canFlush;
@@ -54,18 +53,19 @@ public class BufferBuilderRenderSink implements RenderSink {
         this.postFlush = postFlush;
     }
 
-    static class LineWidth {
+    public static class LineWidth {
         private static final boolean HAS_COMPATIBILITY = (GL11.glGetInteger(GL32.GL_CONTEXT_PROFILE_MASK) & GL32.GL_CONTEXT_COMPATIBILITY_PROFILE_BIT) != 0;
         private static float lineWidth = GL11.glGetInteger(GL11.GL_LINE_WIDTH);
 
-        static void set(final float width) {
+        public static void set(final float width) {
             if (HAS_COMPATIBILITY) {
                 if (lineWidth != width) {
                     GL11.glLineWidth(width);
                     lineWidth = width;
                 }
             }
-            RenderSystem.lineWidth(width);
+
+            builder.setLineWidth(width);
         }
 
     }
@@ -267,9 +267,9 @@ public class BufferBuilderRenderSink implements RenderSink {
         private final VertexFormat.Mode mode;
         private final VertexFormat format;
         private final boolean hasNormals;
-        private final net.minecraft.client.renderer.RenderType type;
+        private final net.minecraft.client.renderer.rendertype.RenderType type;
 
-        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, @Nullable final net.minecraft.client.renderer.RenderType renderPipeline) {
+        public RenderType(final VertexFormat.Mode mode, final VertexFormat format, @Nullable final net.minecraft.client.renderer.rendertype.RenderType renderPipeline) {
             this.mode = mode;
             this.format = format;
             this.hasNormals = format.getElementAttributeNames().contains("Normal");

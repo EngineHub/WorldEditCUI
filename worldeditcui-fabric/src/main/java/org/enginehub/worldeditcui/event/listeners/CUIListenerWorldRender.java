@@ -20,6 +20,7 @@ import net.minecraft.client.renderer.fog.FogRenderer;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.enginehub.worldeditcui.WorldEditCUI;
+import org.enginehub.worldeditcui.render.BufferBuilderRenderSink;
 import org.enginehub.worldeditcui.render.LineStyle;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.RenderSink;
@@ -98,7 +99,7 @@ public class CUIListenerWorldRender
 			}
 			final ProfilerFiller profiler = Profiler.get();
 			profiler.push("worldeditcui");
-			this.ctx.init(new Vector3(this.minecraft.gameRenderer.getMainCamera().getPosition()), partialTicks, sink);
+			this.ctx.init(new Vector3(this.minecraft.gameRenderer.getMainCamera().position()), partialTicks, sink);
 			final GpuBufferSlice fogStart = RenderSystem.getShaderFog();
 			RenderSystem.setShaderFog(this.minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
 			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
@@ -113,7 +114,7 @@ public class CUIListenerWorldRender
 					GlConst.toGl(SourceFactor.SRC_ALPHA),
 					GlConst.toGl(DestFactor.ONE_MINUS_SRC_ALPHA));
 			GlStateManager._depthMask(true);
-			RenderSystem.lineWidth(LineStyle.DEFAULT_WIDTH);
+			BufferBuilderRenderSink.LineWidth.set(LineStyle.DEFAULT_WIDTH);
 
 			try {
 				this.controller.renderSelections(this.ctx);
