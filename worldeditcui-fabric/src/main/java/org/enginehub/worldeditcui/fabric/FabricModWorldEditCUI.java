@@ -22,7 +22,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.Level;
 import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
@@ -50,7 +50,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     private static FabricModWorldEditCUI instance;
 
     private static final KeyMapping.Category KEYBIND_CATEGORY_WECUI
-            = new KeyMapping.Category(ResourceLocation.fromNamespaceAndPath(MOD_ID, "general"));
+            = new KeyMapping.Category(Identifier.fromNamespaceAndPath(MOD_ID, "general"));
 
     private final KeyMapping keyBindToggleUI = key("toggle", GLFW.GLFW_KEY_UNKNOWN);
     private final KeyMapping keyBindClearSel = key("clear", GLFW.GLFW_KEY_UNKNOWN);

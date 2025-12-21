@@ -3,9 +3,9 @@ format = { version = "1.1" }
 
 [versions]
 indra = "3.1.3"
-minecraft = "1.21.10"
-fabricLoader = "0.17.3"
-fabricApi = "0.138.0+1.21.10"
+minecraft = "1.21.11"
+fabricLoader = "0.18.3"
+fabricApi = "0.140.0+1.21.11"
 modmenu = "16.0.0-rc.1"
 viafabricplus = "3.3.0"
 vineflower = "1.10.1"
@@ -13,7 +13,7 @@ cuiProtocol = "4.0.2"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
-parchment = { module = "org.parchmentmc.data:parchment-1.21.9", version = "2025.10.05" }
+parchment = { module = "org.parchmentmc.data:parchment-1.21.10", version = "2025.10.12" }
 fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabricLoader" }
 fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabricApi" }
 fabric-api-bom = { module = "net.fabricmc.fabric-api:fabric-api-bom", version.ref = "fabricApi" }
@@ -31,7 +31,7 @@ curseForgeGradle = { id = "net.darkhax.curseforgegradle", version = "1.1.26" }
 indra-git = { id = "net.kyori.indra.git", version.ref = "indra" }
 indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 jvmConflictResolution = { id = "org.gradlex.jvm-dependency-conflict-resolution", version = "2.1.2" }
-loom = { id = "dev.architectury.loom", version = "1.11.454" }
+loom = { id = "dev.architectury.loom", version = "1.13.463" }
 minotaur = { id = "com.modrinth.minotaur", version = "2.8.7" }
 publishGithubRelease = { id = "ca.stellardrift.publish-github-release", version = "0.1.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.5" }
@@ -39,9 +39,9 @@ spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.9"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc1.21.11"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.9"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc1.21.11"
 version.ref = "cuiProtocol"
