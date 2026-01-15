@@ -19,7 +19,7 @@ fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fab
 fabric-api-bom = { module = "net.fabricmc.fabric-api:fabric-api-bom", version.ref = "fabricApi" }
 fabric-api-networking = { module = "net.fabricmc.fabric-api:fabric-networking-api-v1" }
 modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
-neoforge = { module = "net.neoforged:neoforge", version = "21.10.9-beta"}
+neoforge = { module = "net.neoforged:neoforge", version = "21.11.32-beta"}
 viafabricplus-api = { module = "de.florianmichael:ViaFabricPlus", version.ref = "viafabricplus" }
 viaversion = { module = "com.viaversion:viaversion-common", version = "5.0.5" }
 vineflower = { module = "org.vineflower:vineflower", version.ref = "vineflower" }
