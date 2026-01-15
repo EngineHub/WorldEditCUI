@@ -7,7 +7,7 @@ minecraft = "1.21.11"
 # Mod Loaders & Wrapper
 fabricLoader = "0.18.3"
 fabricApi = "0.140.0+1.21.11"
-neoforge = "21.11.0-beta"
+neoforge = "21.11.32-beta"
 architectury = "19.0.1"
 architecturyPlugin = "3.4.162"
 architecturyLoom = "1.13.463"
