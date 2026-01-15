@@ -1,0 +1,57 @@
+modLoader = "javafml"
+loaderVersion = "[10,)"
+issueTrackerURL = "https://github.com/EngineHub/WorldEditCUI/issues"
+license = "EPL-2.0"
+
+[[mods]]
+modId = "worldeditcui"
+version = "${version}"
+displayName = "WorldEditCUI"
+authors = "lahwran, yetanotherx, Mumfrey, TomyLobo, mikroskeem"
+description = '''
+Client-side user interface for WorldEdit
+'''
+logoFile = "assets/worldeditcui/icon.png"
+modUrl = "https://github.com/EngineHub/WorldEditCUI"
+
+[[dependencies.worldeditcui]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.11,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.worldeditcui]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.11,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.worldeditcui]]
+modId = "worldedit"
+type = "optional"
+versionRange = "[7.3.17,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.worldeditcui]]
+modId = "worldedit"
+type = "incompatible"
+versionRange = "(,7.3.17)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.worldeditcui]]
+modId = "worldeditcui_protocol"
+type = "required"
+versionRange = ""
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.worldeditcui]]
+modId = "architectury"
+type = "required"
+versionRange = "[19.0.1,)"
+ordering = "AFTER"
+side = "CLIENT"

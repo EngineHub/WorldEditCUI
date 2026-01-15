@@ -15,7 +15,7 @@ import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import net.fabricmc.loader.api.FabricLoader;
+import dev.architectury.platform.Platform;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import org.enginehub.worldeditcui.InitialisationFactory;
@@ -144,7 +144,7 @@ public final class CUIConfiguration implements InitialisationFactory {
 	}
 
 	private static Path getConfigFile() {
-		return FabricLoader.getInstance().getConfigDir().resolve(CUIConfiguration.CONFIG_FILE_NAME);
+		return Platform.getConfigFolder().resolve(CUIConfiguration.CONFIG_FILE_NAME);
 	}
 
 	public static CUIConfiguration create() {
