@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
   
 env:
-  RUNTIME_VERSION: 21
+  RUNTIME_VERSION: 25
 
 jobs:
   build:

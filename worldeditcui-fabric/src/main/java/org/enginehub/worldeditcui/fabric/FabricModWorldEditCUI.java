@@ -13,7 +13,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
@@ -81,7 +81,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
      * @return new, registered keybinding in the mod category
      */
     private static KeyMapping key(final String name, final int code) {
-        return KeyBindingHelper.registerKeyBinding(
+        return KeyMappingHelper.registerKeyMapping(
                 new KeyMapping("key." + MOD_ID + '.' + name, code, KEYBIND_CATEGORY_WECUI));
     }
 

@@ -87,17 +87,11 @@ subprojects {
 
         dependencies {
             "minecraft"(libs.minecraft)
-            "mappings"(loom.layered {
-                officialMojangMappings {
-                    nameSyntheticMembers = false
-                }
-                parchment(variantOf(libs.parchment) { artifactType("zip") })
-            })
             "vineflowerDecompilerClasspath"(libs.vineflower)
         }
 
-        configurations.named("modLocalRuntime") {
-            shouldResolveConsistentlyWith(configurations.getByName("modImplementation"))
+        configurations.named("localRuntime") {
+            shouldResolveConsistentlyWith(configurations.getByName("implementation"))
         }
     }
 
