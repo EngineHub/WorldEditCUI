@@ -10,10 +10,7 @@
 package org.enginehub.worldeditcui.event.listeners;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.platform.DestFactor;
-import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.fog.FogRenderer;
@@ -104,15 +101,9 @@ public class CUIListenerWorldRender
 			RenderSystem.setShaderFog(this.minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
 			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
 			poseStack.pushMatrix();
-			GlStateManager._disableCull();
 			GlStateManager._enableBlend();
 			// RenderSystem.disableTexture();
 			GlStateManager._enableDepthTest();
-			GlStateManager._blendFuncSeparate(
-					GlConst.toGl(SourceFactor.SRC_ALPHA),
-					GlConst.toGl(DestFactor.ONE_MINUS_SRC_ALPHA),
-					GlConst.toGl(SourceFactor.SRC_ALPHA),
-					GlConst.toGl(DestFactor.ONE_MINUS_SRC_ALPHA));
 			GlStateManager._depthMask(true);
 			BufferBuilderRenderSink.LineWidth.set(LineStyle.DEFAULT_WIDTH);
 
@@ -127,7 +118,6 @@ public class CUIListenerWorldRender
 			GlStateManager._depthFunc(GL32.GL_LEQUAL);
 			// RenderSystem.enableTexture();
 			GlStateManager._disableBlend();
-			GlStateManager._enableCull();
 			poseStack.popMatrix();
 			RenderSystem.setShaderFog(fogStart);
 			profiler.pop();

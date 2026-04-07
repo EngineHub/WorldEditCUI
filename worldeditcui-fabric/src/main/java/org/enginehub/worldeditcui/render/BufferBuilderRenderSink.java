@@ -9,12 +9,14 @@
  */
 package org.enginehub.worldeditcui.render;
 
+import com.mojang.blaze3d.opengl.GlConst;
 import com.mojang.blaze3d.opengl.GlStateManager;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+import com.mojang.blaze3d.platform.CompareOp;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL32;
 
@@ -38,7 +40,7 @@ public class BufferBuilderRenderSink implements RenderSink {
 
     // line state
     private float lastLineWidth = -1;
-    private int lastDepthFunc = -1;
+    private @Nullable CompareOp lastDepthTest;
 
     public BufferBuilderRenderSink(final TypeFactory types) {
         this(types, () -> {}, () -> {});
@@ -79,14 +81,14 @@ public class BufferBuilderRenderSink implements RenderSink {
     public boolean apply(final LineStyle line, final RenderStyle.RenderType type) {
         if (line.renderType.matches(type))
         {
-            if (line.lineWidth != this.lastLineWidth || line.renderType.depthFunc() != this.lastDepthFunc) {
+            if (line.lineWidth != this.lastLineWidth || line.renderType.depthTest() != this.lastDepthTest) {
                 this.flush();
                 if (this.active && this.activeRenderType != null) {
                     this.canFlush = true;
                     this.builder = Tesselator.getInstance().begin(this.activeRenderType.mode, this.activeRenderType.format);
                 }
                 LineWidth.set(this.lastLineWidth = line.lineWidth);
-                GlStateManager._depthFunc(this.lastDepthFunc = line.renderType.depthFunc());
+                GlStateManager._depthFunc(GlConst.toGl(this.lastDepthTest = line.renderType.depthTest()));
             }
             return true;
         }

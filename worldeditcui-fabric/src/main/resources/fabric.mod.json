@@ -36,10 +36,10 @@
   "depends": {
     "worldeditcui_protocol": "*",
     "fabric-api-base": "*",
-    "fabric-key-mapping-api-v1": "^1.0.0",
+    "fabric-key-mapping-api-v1": "^2.0.0",
     "fabric-networking-api-v1": "*",
     "fabric-rendering-v1": ">=1.5.0",
-    "fabric-lifecycle-events-v1": "^2.0.0",
+    "fabric-lifecycle-events-v1": "^4.0.0",
     "fabric-screen-api-v1": ">=1.0.9",
     "fabric-resource-loader-v0": ">=0.4.17",
     "fabric-transitive-access-wideners-v1": "*",

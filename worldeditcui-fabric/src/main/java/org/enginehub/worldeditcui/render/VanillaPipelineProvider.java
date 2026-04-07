@@ -10,6 +10,7 @@
 package org.enginehub.worldeditcui.render;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
@@ -26,7 +27,7 @@ public final class VanillaPipelineProvider implements PipelineProvider {
                 RenderPipeline.builder(RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
                                 .withVertexShader("core/position_color")
                                 .withFragmentShader("core/position_color")
-                                .withBlend(BlendFunction.TRANSLUCENT)
+                                .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
                                 .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
                                 .buildSnippet())
                         .withLocation("pipeline/wecui_quads").withCull(false).build()

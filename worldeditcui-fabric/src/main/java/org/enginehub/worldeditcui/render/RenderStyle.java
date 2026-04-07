@@ -9,8 +9,8 @@
  */
 package org.enginehub.worldeditcui.render;
 
+import com.mojang.blaze3d.platform.CompareOp;
 import org.enginehub.worldeditcui.config.Colour;
-import org.lwjgl.opengl.GL32;
 
 /**
  * Render style adapter, can be one of the built-in {@link ConfiguredColour}s
@@ -28,28 +28,28 @@ public interface RenderStyle
 		/**
 		 * Render type to draw lines regardless of depth
 		 */
-		ANY(GL32.GL_ALWAYS),
+		ANY(CompareOp.ALWAYS_PASS),
 		
 		/**
 		 * Render type for "hidden" lines (under world geometry)
 		 */
-		HIDDEN(GL32.GL_GEQUAL),
+		HIDDEN(CompareOp.GREATER_THAN_OR_EQUAL),
 		
 		/**
 		 * Render type for visible lines (over world geometry) 
 		 */
-		VISIBLE(GL32.GL_LESS);
+		VISIBLE(CompareOp.LESS_THAN);
 		
-		final int depthFunc;
+		final CompareOp depthTest;
 
-		private RenderType(int depthFunc)
+		private RenderType(final CompareOp depthTest)
 		{
-			this.depthFunc = depthFunc;
+			this.depthTest = depthTest;
 		}
 
-		public int depthFunc()
+		public CompareOp depthTest()
 		{
-			return this.depthFunc;
+			return this.depthTest;
 		}
 		
 		public boolean matches(RenderType other)

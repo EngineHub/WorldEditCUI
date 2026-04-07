@@ -15,8 +15,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -98,15 +99,15 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register(this::onGameInitDone);
         CUINetworking.subscribeToCuiPacket(this::onPluginMessage);
         ClientPlayConnectionEvents.JOIN.register(this::onJoinGame);
-        WorldRenderEvents.END_EXTRACTION.register(ctx -> {
+        LevelRenderEvents.END_EXTRACTION.register(ctx -> {
             // MC now handles this separately to the actual render, due to it occurring across threads.
             // We need to store this for later use during actual render.
-            lastPartialTicks = ctx.tickCounter().getRealtimeDeltaTicks();
+            this.onEndExtraction(ctx);
         });
-        WorldRenderEvents.END_MAIN.register(ctx -> {
+        LevelRenderEvents.END_MAIN.register(ctx -> {
             try {
                 RenderSystem.getModelViewStack().pushMatrix();
-                RenderSystem.getModelViewStack().mul(ctx.matrices().last().pose());
+                RenderSystem.getModelViewStack().mul(ctx.poseStack().last().pose());
                 // RenderSystem.applyModelViewMatrix();
                 this.onPostRenderEntities(ctx);
             } finally {
@@ -185,7 +186,11 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         this.helo(handler);
     }
 
-    public void onPostRenderEntities(final WorldRenderContext ctx) {
+    private void onEndExtraction(final LevelExtractionContext ctx) {
+        this.lastPartialTicks = ctx.deltaTracker().getRealtimeDeltaTicks();
+    }
+
+    public void onPostRenderEntities(final LevelRenderContext ctx) {
         if (this.visible) {
             this.worldRenderListener.onRender(lastPartialTicks);
         }
