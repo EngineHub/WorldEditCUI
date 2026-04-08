@@ -13,10 +13,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
@@ -28,6 +29,7 @@ import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerChannel;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerWorldRender;
+import org.enginehub.worldeditcui.render.LegacyVanillaPipelineProvider;
 import org.enginehub.worldeditcui.protocol.CUIPacket;
 import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 import org.enginehub.worldeditcui.render.OptifinePipelineProvider;
@@ -58,6 +60,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
 
     private static final List<PipelineProvider> RENDER_PIPELINES = List.of(
             new OptifinePipelineProvider(),
+            new LegacyVanillaPipelineProvider(),
             new VanillaPipelineProvider()
     );
 
@@ -81,7 +84,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
      * @return new, registered keybinding in the mod category
      */
     private static KeyMapping key(final String name, final int code) {
-        return KeyBindingHelper.registerKeyBinding(
+        return KeyMappingHelper.registerKeyMapping(
                 new KeyMapping("key." + MOD_ID + '.' + name, code, KEYBIND_CATEGORY_WECUI));
     }
 
@@ -98,15 +101,15 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         ClientLifecycleEvents.CLIENT_STARTED.register(this::onGameInitDone);
         CUINetworking.subscribeToCuiPacket(this::onPluginMessage);
         ClientPlayConnectionEvents.JOIN.register(this::onJoinGame);
-        WorldRenderEvents.END_EXTRACTION.register(ctx -> {
+        LevelRenderEvents.END_EXTRACTION.register(ctx -> {
             // MC now handles this separately to the actual render, due to it occurring across threads.
             // We need to store this for later use during actual render.
-            lastPartialTicks = ctx.tickCounter().getRealtimeDeltaTicks();
+            this.onEndExtraction(ctx);
         });
-        WorldRenderEvents.END_MAIN.register(ctx -> {
+        LevelRenderEvents.END_MAIN.register(ctx -> {
             try {
                 RenderSystem.getModelViewStack().pushMatrix();
-                RenderSystem.getModelViewStack().mul(ctx.matrices().last().pose());
+                RenderSystem.getModelViewStack().mul(ctx.poseStack().last().pose());
                 // RenderSystem.applyModelViewMatrix();
                 this.onPostRenderEntities(ctx);
             } finally {
@@ -175,7 +178,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     public void onGameInitDone(final Minecraft client) {
         this.controller = new WorldEditCUI();
         this.controller.initialise(client);
-        this.worldRenderListener = new CUIListenerWorldRender(this.controller, client, RENDER_PIPELINES);
+        this.worldRenderListener = new CUIListenerWorldRender(this.controller, client, this.controller.getConfiguration(), RENDER_PIPELINES);
         this.channelListener = new CUIListenerChannel(this.controller);
     }
 
@@ -185,7 +188,11 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         this.helo(handler);
     }
 
-    public void onPostRenderEntities(final WorldRenderContext ctx) {
+    private void onEndExtraction(final LevelExtractionContext ctx) {
+        this.lastPartialTicks = ctx.deltaTracker().getRealtimeDeltaTicks();
+    }
+
+    public void onPostRenderEntities(final LevelRenderContext ctx) {
         if (this.visible) {
             this.worldRenderListener.onRender(lastPartialTicks);
         }

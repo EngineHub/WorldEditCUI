@@ -37,14 +37,19 @@ loom {
 
 val fabricApi by configurations.creating
 dependencies {
-    "include"(libs.cuiProtocol.fabric)
-    "modImplementation"(libs.cuiProtocol.fabric)
-    modImplementation(libs.fabric.loader)
-    modImplementation(libs.modmenu)
-    modCompileOnly(libs.viafabricplus.api) {
+    "include"(libs.cuiProtocol.fabric) {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, objects.named(Bundling::class, Bundling.SHADOWED))
+        }
+    }
+    "implementation"(libs.cuiProtocol.common)
+    "implementation"(libs.cuiProtocol.fabric)
+    implementation(libs.fabric.loader)
+    implementation(libs.modmenu)
+    compileOnly(libs.viafabricplus.api) {
         isTransitive = false
     }
-    modCompileOnly(libs.viaversion)
+    compileOnly(libs.viaversion)
 
     // [1] declare fabric-api dependency...
     fabricApi(libs.fabric.api)
@@ -91,7 +96,7 @@ dependencies {
 
     fabricApiDependencies.values.forEach {
         "include"(it)
-        "modImplementation"(it)
+        "implementation"(it)
     }
 
     // for development
@@ -227,7 +232,7 @@ tasks {
 
         apiToken = cfApiToken.get()
 
-        with(upload(cfProjectId.get(), remapJar)) {
+        with(upload(cfProjectId.get(), jar)) {
             displayName = project.version
             releaseType = Constants.RELEASE_TYPE_RELEASE
             changelog = changelogContents.getOrElse("")
@@ -255,7 +260,7 @@ modrinth {
     token = modrinthToken
     projectId = "worldedit-cui"
     syncBodyFrom = providers.provider { file("README.md").readText(Charsets.UTF_8) }
-    uploadFile.set(tasks.remapJar)
+    uploadFile.set(tasks.jar)
     gameVersions.add(libs.versions.minecraft.get())
     changelog = changelogContents
     dependencies {
@@ -277,5 +282,5 @@ githubRelease {
     repository = "EngineHub/WorldEditCUI"
     releaseName = "WorldEditCUI v$version"
     releaseBody = changelogContents
-    artifacts.from(tasks.remapJar)
+    artifacts.from(tasks.jar)
 }

@@ -13,7 +13,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.logging.LogUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
@@ -104,17 +104,18 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
         }
 
         @Override
-        public void renderContent(GuiGraphics gfx, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            super.renderContent(gfx, mouseX, mouseY, isMouseOver, partialTick);
+        public void extractContent(GuiGraphicsExtractor gfx, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+            super.extractContent(gfx, mouseX, mouseY, isMouseOver, partialTick);
 
             this.toggleBotton.setX(getRowLeft() + 105);
             this.toggleBotton.setY(getY());
-            this.toggleBotton.render(gfx, mouseX, mouseY, partialTick);
+            this.toggleBotton.extractRenderState(gfx, mouseX, mouseY, partialTick);
         }
     }
 
     public class ColorConfigEntry extends ConfigEntry {
         private final EditBox textField;
+        private String currentInput;
 
         public ColorConfigEntry(String tag) {
             super(tag);
@@ -122,8 +123,14 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
             Colour cValue = (Colour)configuration.getConfigArray().get(tag);
             textField = new EditBox(CUIConfigList.this.minecraft.font, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, Component.literal(cValue.hexString()));
             textField.setMaxLength(9); // # + 8 hex chars
-            textField.setValue(cValue.hexString());
+            this.currentInput = cValue.hexString();
+            textField.setValue(this.currentInput);
             textField.setResponder(updated -> {
+                if (!isAcceptableColorInput(updated)) {
+                    textField.setValue(this.currentInput);
+                    return;
+                }
+                this.currentInput = updated;
                 Colour tested = Colour.parseRgbaOrNull(updated);
                 if (tested != null) {
                     configuration.changeValue(tag, tested);
@@ -139,21 +146,22 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
                     .result()
                     .orElseGet(() -> FormattedCharSequence.forward(string, invalidFormat));
             });
-            textField.setFilter(value -> {
-                // filter for #AARRGGBB
-                if (!value.isEmpty() && value.charAt(0) != '#') { // does not start with hex
+        }
+
+        private boolean isAcceptableColorInput(final String value) {
+            // filter for #AARRGGBB
+            if (!value.isEmpty() && value.charAt(0) != '#') { // does not start with hex
+                return false;
+            }
+
+            for (int i = 1; i < value.length(); i++) { // any characters that are not valid in a hex string
+                final char c = value.charAt(i);
+                if ((c < '0' || c > '9') && (c < 'A' || c > 'F') && (c < 'a' || c > 'f')) {
                     return false;
                 }
+            }
 
-                for (int i = 1; i < value.length(); i++) { // any characters that are not valid in a hex string
-                    final char c = value.charAt(i);
-                    if ((c < '0' || c > '9') && (c < 'A' || c > 'F') && (c < 'a' || c > 'f')) {
-                        return false;
-                    }
-                }
-
-                return true;
-            });
+            return true;
         }
 
         @Override
@@ -168,15 +176,16 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
 
         @Override
         protected void updateFromConfig() {
-            this.textField.setValue(((Colour)configuration.getConfigArray().get(tag)).hexString());
+            this.currentInput = ((Colour)configuration.getConfigArray().get(tag)).hexString();
+            this.textField.setValue(this.currentInput);
         }
 
         @Override
-        public void renderContent(GuiGraphics gfx, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
-            super.renderContent(gfx, mouseX, mouseY, isMouseOver, partialTick);
+        public void extractContent(GuiGraphicsExtractor gfx, int mouseX, int mouseY, boolean isMouseOver, float partialTick) {
+            super.extractContent(gfx, mouseX, mouseY, isMouseOver, partialTick);
             this.textField.setX(getRowLeft() + 105);
             this.textField.setY(getY());
-            this.textField.render(gfx, mouseX, mouseY, partialTick);
+            this.textField.extractRenderState(gfx, mouseX, mouseY, partialTick);
         }
     }
 
@@ -203,7 +212,7 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
         }
 
         @Override
-        public void renderContent(GuiGraphics gfx, int mouseX, int mouseY, boolean hovered, float partialTick) {
+        public void extractContent(GuiGraphicsExtractor gfx, int mouseX, int mouseY, boolean hovered, float partialTick) {
             // new API handles entry position internally
             int left = this.getX();
             int top = this.getY(); // or getRowTop()
@@ -212,11 +221,11 @@ public class CUIConfigList extends ContainerObjectSelectionList<CUIConfigList.Co
 
             this.textField.setX(textLeft);
             this.textField.setY(top);
-            this.textField.render(gfx, mouseX, mouseY, partialTick);
+            this.textField.extractRenderState(gfx, mouseX, mouseY, partialTick);
 
             this.resetButton.setX(left + 190);
             this.resetButton.setY(top);
-            this.resetButton.render(gfx, mouseX, mouseY, partialTick);
+            this.resetButton.extractRenderState(gfx, mouseX, mouseY, partialTick);
         }
 
         protected abstract void updateFromConfig();

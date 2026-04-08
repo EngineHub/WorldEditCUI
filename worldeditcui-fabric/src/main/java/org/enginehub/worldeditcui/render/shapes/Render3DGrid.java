@@ -9,8 +9,6 @@
  */
 package org.enginehub.worldeditcui.render.shapes;
 
-import com.mojang.blaze3d.opengl.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.util.Mth;
 import org.enginehub.worldeditcui.event.listeners.CUIRenderContext;
 import org.enginehub.worldeditcui.render.LineStyle;
@@ -88,8 +86,6 @@ public class Render3DGrid extends RenderRegion
 
 		if (this.spacing != 1.0)
 		{
-			GlStateManager._disableCull();
-
 			double[] vertices = {
 					x1, y1, z1,  x2, y1, z1,  x2, y1, z2,  x1, y1, z2, // bottom
 					x1, y2, z1,  x2, y2, z1,  x2, y2, z2,  x1, y2, z2, // top
@@ -112,9 +108,6 @@ public class Render3DGrid extends RenderRegion
 					ctx.endQuads();
 				}
 			}
-
-			ctx.flush(); // todo: only needed because of disable/enable cull
-			GlStateManager._enableCull();
 		}
 		
 		if (this.spacing < Render3DGrid.MIN_SPACING)
