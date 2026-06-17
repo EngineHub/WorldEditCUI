@@ -13,6 +13,12 @@ allprojects {
     version = "${rootProject.libs.versions.minecraft.get()}+01"
 
     repositories {
+        mavenCentral {
+            name = "MavenCentralLWJGL"
+            mavenContent {
+                includeGroup("org.lwjgl")
+            }
+        }
         // mirrors:
         // - https://maven.minecraftforge.net/
         // - https://maven.neoforged.net/

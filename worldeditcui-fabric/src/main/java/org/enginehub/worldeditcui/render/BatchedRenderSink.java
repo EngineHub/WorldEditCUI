@@ -9,10 +9,10 @@
  */
 package org.enginehub.worldeditcui.render;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.MeshData;
-import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.PrimitiveTopology;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.StagedVertexBuffer;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
 
@@ -27,7 +27,9 @@ public final class BatchedRenderSink implements RenderSink {
     private @Nullable VariantSet currentVariants;
     private @Nullable RenderTarget activeTarget;
     private @Nullable Primitive activePrimitive;
-    private @Nullable BufferBuilder builder;
+    private final StagedVertexBuffer vertexBuffer = new StagedVertexBuffer(() -> "WorldEditCUI", 1536);
+    private @Nullable StagedVertexBuffer.Draw draw;
+    private @Nullable VertexConsumer builder;
     private boolean active;
     private float r = -1f;
     private float g;
@@ -180,11 +182,23 @@ public final class BatchedRenderSink implements RenderSink {
         if (this.active) {
             throw new IllegalStateException("Tried to flush while still active");
         }
-        final MeshData mesh = this.builder.buildOrThrow();
-        this.activeTarget.draw(mesh);
-        this.builder = null;
-        this.activeTarget = null;
-        this.activePrimitive = null;
+        this.vertexBuffer.upload();
+        try {
+            final StagedVertexBuffer.Draw draw = this.draw;
+            if (draw == null) {
+                throw new IllegalStateException("No active draw");
+            }
+            final StagedVertexBuffer.ExecuteInfo executeInfo = this.vertexBuffer.getExecuteInfo(draw);
+            if (executeInfo != null) {
+                this.activeTarget.draw(executeInfo);
+            }
+        } finally {
+            this.vertexBuffer.endFrame();
+            this.draw = null;
+            this.builder = null;
+            this.activeTarget = null;
+            this.activePrimitive = null;
+        }
     }
 
     private void end(final RenderTarget target, final Primitive primitive) {
@@ -205,7 +219,8 @@ public final class BatchedRenderSink implements RenderSink {
             this.flush();
         }
         if (this.activeTarget == null) {
-            this.builder = Tesselator.getInstance().begin(target.mode(), target.format());
+            this.draw = this.vertexBuffer.appendDraw(target.format(), target.primitiveTopology());
+            this.builder = this.vertexBuffer.getVertexBuilder(this.draw);
             this.activeTarget = target;
         }
         this.activePrimitive = primitive;
@@ -228,24 +243,24 @@ public final class BatchedRenderSink implements RenderSink {
 
     @FunctionalInterface
     public interface MeshDrawer {
-        void draw(MeshData mesh);
+        void draw(StagedVertexBuffer.ExecuteInfo executeInfo);
     }
 
     public static final class RenderTarget {
-        private final VertexFormat.Mode mode;
+        private final PrimitiveTopology primitiveTopology;
         private final VertexFormat format;
         private final boolean hasNormals;
         private final MeshDrawer drawer;
 
-        public RenderTarget(final VertexFormat.Mode mode, final VertexFormat format, final MeshDrawer drawer) {
-            this.mode = mode;
+        public RenderTarget(final PrimitiveTopology primitiveTopology, final VertexFormat format, final MeshDrawer drawer) {
+            this.primitiveTopology = primitiveTopology;
             this.format = format;
-            this.hasNormals = format.getElementAttributeNames().contains("Normal");
+            this.hasNormals = format.contains("Normal");
             this.drawer = drawer;
         }
 
-        VertexFormat.Mode mode() {
-            return this.mode;
+        PrimitiveTopology primitiveTopology() {
+            return this.primitiveTopology;
         }
 
         VertexFormat format() {
@@ -256,8 +271,8 @@ public final class BatchedRenderSink implements RenderSink {
             return this.hasNormals;
         }
 
-        void draw(final MeshData mesh) {
-            this.drawer.draw(mesh);
+        void draw(final StagedVertexBuffer.ExecuteInfo executeInfo) {
+            this.drawer.draw(executeInfo);
         }
     }
 

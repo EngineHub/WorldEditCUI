@@ -35,8 +35,6 @@
     "worldeditcui.options.compat.title": "Compatibility Options",
     "worldeditcui.options.compat.spammy": "Promiscuous Mode",
     "worldeditcui.options.compat.spammy.tooltip": "Enable this option to send /we cui all the time",
-    "worldeditcui.options.compat.renderer": "Experimental Renderer",
-    "worldeditcui.options.compat.renderer.tooltip": "Use the new batched vanilla renderer instead of the default legacy renderer",
     "worldeditcui.options.color.title": "Display Colors",
     "worldeditcui.options.extra.title": "Advanced Options",
     "worldeditcui.options.extra.clearall": "Clear displayed regions",

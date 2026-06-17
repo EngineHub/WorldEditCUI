@@ -29,10 +29,8 @@ import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.config.CUIConfiguration;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerChannel;
 import org.enginehub.worldeditcui.event.listeners.CUIListenerWorldRender;
-import org.enginehub.worldeditcui.render.LegacyVanillaPipelineProvider;
 import org.enginehub.worldeditcui.protocol.CUIPacket;
 import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
-import org.enginehub.worldeditcui.render.OptifinePipelineProvider;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.VanillaPipelineProvider;
 import org.lwjgl.glfw.GLFW;
@@ -59,8 +57,6 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     private final KeyMapping keyBindChunkBorder = key("chunk", GLFW.GLFW_KEY_UNKNOWN);
 
     private static final List<PipelineProvider> RENDER_PIPELINES = List.of(
-            new OptifinePipelineProvider(),
-            new LegacyVanillaPipelineProvider(),
             new VanillaPipelineProvider()
     );
 
@@ -124,7 +120,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
         final boolean inGame = mc.player != null;
         final boolean clock = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false) > 0;
 
-        if (inGame && mc.screen == null) {
+        if (inGame && mc.gui.screen() == null) {
             while (this.keyBindToggleUI.consumeClick()) {
                 this.visible = !this.visible;
             }
@@ -178,7 +174,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     public void onGameInitDone(final Minecraft client) {
         this.controller = new WorldEditCUI();
         this.controller.initialise(client);
-        this.worldRenderListener = new CUIListenerWorldRender(this.controller, client, this.controller.getConfiguration(), RENDER_PIPELINES);
+        this.worldRenderListener = new CUIListenerWorldRender(this.controller, client, RENDER_PIPELINES);
         this.channelListener = new CUIListenerChannel(this.controller);
     }
 
