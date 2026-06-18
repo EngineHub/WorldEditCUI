@@ -80,7 +80,6 @@ public final class CUIConfiguration implements InitialisationFactory {
 
 	private boolean debugMode = false;
 	private boolean promiscuous = false;
-	private boolean compatibilityRenderer = false;
 	private boolean clearAllOnKey = false;
 
     private Colour cuboidGridColor = ConfiguredColour.CUBOIDGRID.getDefault();
@@ -136,10 +135,6 @@ public final class CUIConfiguration implements InitialisationFactory {
 		this.promiscuous = promiscuous;
 	}
 
-	public boolean isExperimentalRenderer() {
-		return this.compatibilityRenderer;
-	}
-
 	public boolean isClearAllOnKey() {
 		return this.clearAllOnKey;
 	}
@@ -172,7 +167,6 @@ public final class CUIConfiguration implements InitialisationFactory {
 
 		configArray.put("debugMode", config.debugMode);
 		configArray.put("promiscuous", config.promiscuous);
-		configArray.put("compatibilityRenderer", config.compatibilityRenderer);
 		configArray.put("clearAllOnKey", config.clearAllOnKey);
 
 		configArray.put("cuboidGridColor", config.cuboidGridColor);
@@ -208,7 +202,6 @@ public final class CUIConfiguration implements InitialisationFactory {
 	public void configChanged() {
 		debugMode 				= (Boolean) configArray.get("debugMode");
 		promiscuous 			= (Boolean) configArray.get("promiscuous");
-		compatibilityRenderer 	= (Boolean) configArray.get("compatibilityRenderer");
 		clearAllOnKey 			= (Boolean) configArray.get("clearAllOnKey");
 
 		cuboidGridColor 		= (Colour) 	configArray.get("cuboidGridColor");
@@ -230,7 +223,7 @@ public final class CUIConfiguration implements InitialisationFactory {
 
 	public Object getDefaultValue(String text) {
 		return switch (text) {
-			case "debugMode", "promiscuous", "compatibilityRenderer", "clearAllOnKey" -> false;
+			case "debugMode", "promiscuous", "clearAllOnKey" -> false;
 			case "cuboidGridColor" -> ConfiguredColour.CUBOIDGRID.getDefault();
 			case "cuboidEdgeColor" -> ConfiguredColour.CUBOIDBOX.getDefault();
 			case "cuboidFirstPointColor" -> ConfiguredColour.CUBOIDPOINT1.getDefault();
@@ -272,7 +265,6 @@ public final class CUIConfiguration implements InitialisationFactory {
 		return switch (text) {
 			case "debugMode" -> "worldeditcui.options.debugMode";
 			case "promiscuous" -> "worldeditcui.options.compat.spammy";
-			case "compatibilityRenderer" -> "worldeditcui.options.compat.renderer";
 			case "clearAllOnKey" -> "worldeditcui.options.extra.clearall";
 			case "cuboidGridColor" -> "worldeditcui.color.cuboidgrid";
 			case "cuboidEdgeColor" -> "worldeditcui.color.cuboidedge";

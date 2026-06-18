@@ -3,10 +3,10 @@ format = { version = "1.1" }
 
 [versions]
 indra = "3.1.3"
-minecraft = "26.1.1"
-fabricLoader = "0.18.6"
-fabricApi = "0.145.4+26.1.1"
-modmenu = "18.0.0-alpha.8"
+minecraft = "26.2"
+fabricLoader = "0.19.3"
+fabricApi = "0.152.1+26.2"
+modmenu = "20.0.0-beta.2"
 viafabricplus = "4.5.1"
 vineflower = "1.11.2"
 cuiProtocol = "4.0.3"
@@ -30,7 +30,7 @@ curseForgeGradle = { id = "net.darkhax.curseforgegradle", version = "1.1.26" }
 indra-git = { id = "net.kyori.indra.git", version.ref = "indra" }
 indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 jvmConflictResolution = { id = "org.gradlex.jvm-dependency-conflict-resolution", version = "2.1.2" }
-loom = { id = "dev.architectury.loom-no-remap", version = "1.14.471" }
+loom = { id = "dev.architectury.loom-no-remap", version = "1.14.476" }
 minotaur = { id = "com.modrinth.minotaur", version = "2.8.7" }
 publishGithubRelease = { id = "ca.stellardrift.publish-github-release", version = "0.1.0" }
 shadow = { id = "com.gradleup.shadow", version = "8.3.5" }
@@ -38,13 +38,13 @@ spotless = { id = "com.diffplug.spotless", version = "6.25.0" }
 versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
 
 [libraries.cuiProtocol-common]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-common-mc26.1"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-common-mc26.2"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-fabric]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc26.1"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-fabric-mc26.2"
 version.ref = "cuiProtocol"
 
 [libraries.cuiProtocol-neoforge]
-module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc26.1"
+module = "org.enginehub.worldeditcui-protocol:worldeditcui-protocol-neoforge-mc26.2"
 version.ref = "cuiProtocol"

@@ -9,6 +9,7 @@
  */
 package org.enginehub.worldeditcui.render;
 
+import com.mojang.blaze3d.PrimitiveTopology;
 import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.DepthStencilState;
@@ -28,25 +29,32 @@ public final class VanillaPipelineProvider implements PipelineProvider {
 
     public static class DefaultTypeFactory implements BatchedRenderSink.TypeFactory {
         public static final DefaultTypeFactory INSTANCE = new DefaultTypeFactory();
-        private static final RenderPipeline.Snippet QUADS_SNIPPET = RenderPipeline.builder(RenderPipelines.MATRICES_PROJECTION_SNIPPET)
-            .withVertexShader("core/position_color")
-            .withFragmentShader("core/position_color")
-            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-            .withCull(false)
-            .withDepthStencilState(DepthStencilState.DEFAULT)
-            .buildSnippet();
-        private static final RenderPipeline.Snippet LINES_SNIPPET = RenderPipeline.builder(RenderPipelines.MATRICES_FOG_SNIPPET, RenderPipelines.GLOBALS_SNIPPET)
-            .withVertexShader("core/rendertype_lines")
-            .withFragmentShader("core/rendertype_lines")
-            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-            .withCull(false)
-            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH, VertexFormat.Mode.LINES)
-            .withDepthStencilState(DepthStencilState.DEFAULT)
-            .buildSnippet();
+        private static final RenderPipeline.Snippet QUADS_SNIPPET = createSnippet(
+            RenderPipelines.DEBUG_QUADS,
+            DefaultVertexFormat.POSITION_COLOR,
+            PrimitiveTopology.QUADS
+        );
+        private static final RenderPipeline.Snippet LINES_SNIPPET = createSnippet(
+            RenderPipelines.LINES,
+            DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH,
+            PrimitiveTopology.LINES
+        );
         private static final Map<RenderStyle.RenderType, BatchedRenderSink.VariantSet> VARIANTS = createVariants();
 
         private DefaultTypeFactory() {}
+
+        private static RenderPipeline.Snippet createSnippet(final RenderPipeline base, final VertexFormat vertexFormat, final PrimitiveTopology primitiveTopology) {
+            final RenderPipeline.Builder builder = RenderPipeline.builder()
+                .withVertexShader(base.getVertexShader())
+                .withFragmentShader(base.getFragmentShader())
+                .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
+                .withCull(false)
+                .withVertexBinding(0, vertexFormat)
+                .withPrimitiveTopology(primitiveTopology)
+                .withDepthStencilState(DepthStencilState.DEFAULT);
+            base.getBindGroupLayouts().forEach(builder::withBindGroupLayout);
+            return builder.buildSnippet();
+        }
 
         @Override
         public BatchedRenderSink.VariantSet forStyle(final RenderStyle.RenderType renderType) {
@@ -78,11 +86,14 @@ public final class VanillaPipelineProvider implements PipelineProvider {
                 .withDepthStencilState(new DepthStencilState(depthTest, true))
                 .build();
             final RenderSetup setup = RenderSetup.builder(pipeline)
-                .bufferSize(1536)
                 .sortOnUpload()
                 .createRenderSetup();
             final RenderType renderType = RenderType.create("wecui_quads_" + idSuffix, setup);
-            return new BatchedRenderSink.RenderTarget(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR, renderType::draw);
+            return new BatchedRenderSink.RenderTarget(
+                PrimitiveTopology.QUADS,
+                DefaultVertexFormat.POSITION_COLOR,
+                executeInfo -> renderType.prepare().drawFromBuffer(executeInfo)
+            );
         }
 
         private static BatchedRenderSink.RenderTarget createLinesTarget(final String idSuffix, final CompareOp depthTest) {
@@ -92,7 +103,11 @@ public final class VanillaPipelineProvider implements PipelineProvider {
                 .build();
             final RenderSetup setup = RenderSetup.builder(pipeline).createRenderSetup();
             final RenderType renderType = RenderType.create("wecui_lines_" + idSuffix, setup);
-            return new BatchedRenderSink.RenderTarget(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH, renderType::draw);
+            return new BatchedRenderSink.RenderTarget(
+                PrimitiveTopology.LINES,
+                DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH,
+                executeInfo -> renderType.prepare().drawFromBuffer(executeInfo)
+            );
         }
     }
 
