@@ -244,6 +244,8 @@ tasks {
             // Config screens, version compatibility
             addOptional("modmenu", "viafabricplus", "worldedit")
             addJavaVersion("Java $targetJavaVersion")
+            addEnvironment("client")
+            addModLoader("fabric")
             addGameVersion(libs.versions.minecraft.get())
         }
     }
