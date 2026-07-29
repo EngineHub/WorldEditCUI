@@ -46,6 +46,7 @@
     "minecraft": ">=26.2"
   },
   "suggests": {
+    "iris": ">=1.11.0",
     "worldedit": ">=7.4.0"
   },
   "breaks": {

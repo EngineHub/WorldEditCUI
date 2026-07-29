@@ -17,9 +17,11 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.CompareOp;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.resources.Identifier;
 
 import java.util.EnumMap;
 import java.util.Locale;
@@ -29,6 +31,7 @@ public final class VanillaPipelineProvider implements PipelineProvider {
 
     public static class DefaultTypeFactory implements BatchedRenderSink.TypeFactory {
         public static final DefaultTypeFactory INSTANCE = new DefaultTypeFactory();
+        private static final boolean IRIS_LOADED = FabricLoader.getInstance().isModLoaded("iris");
         private static final RenderPipeline.Snippet QUADS_SNIPPET = createSnippet(
             RenderPipelines.DEBUG_QUADS,
             DefaultVertexFormat.POSITION_COLOR,
@@ -82,9 +85,12 @@ public final class VanillaPipelineProvider implements PipelineProvider {
 
         private static BatchedRenderSink.RenderTarget createQuadsTarget(final String idSuffix, final CompareOp depthTest) {
             final RenderPipeline pipeline = RenderPipeline.builder(QUADS_SNIPPET)
-                .withLocation("pipeline/wecui_quads_" + idSuffix)
+                .withLocation(Identifier.fromNamespaceAndPath("worldeditcui", "pipeline/quads_" + idSuffix))
                 .withDepthStencilState(new DepthStencilState(depthTest, true))
                 .build();
+            if (IRIS_LOADED) {
+                IrisPipelineIntegration.registerQuads(pipeline);
+            }
             final RenderSetup setup = RenderSetup.builder(pipeline)
                 .sortOnUpload()
                 .createRenderSetup();
@@ -98,9 +104,12 @@ public final class VanillaPipelineProvider implements PipelineProvider {
 
         private static BatchedRenderSink.RenderTarget createLinesTarget(final String idSuffix, final CompareOp depthTest) {
             final RenderPipeline pipeline = RenderPipeline.builder(LINES_SNIPPET)
-                .withLocation("pipeline/wecui_lines_" + idSuffix)
+                .withLocation(Identifier.fromNamespaceAndPath("worldeditcui", "pipeline/lines_" + idSuffix))
                 .withDepthStencilState(new DepthStencilState(depthTest, true))
                 .build();
+            if (IRIS_LOADED) {
+                IrisPipelineIntegration.registerLines(pipeline);
+            }
             final RenderSetup setup = RenderSetup.builder(pipeline).createRenderSetup();
             final RenderType renderType = RenderType.create("wecui_lines_" + idSuffix, setup);
             return new BatchedRenderSink.RenderTarget(

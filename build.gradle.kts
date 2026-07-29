@@ -32,6 +32,12 @@ allprojects {
         maven(url = "https://maven.terraformersmc.com/releases/") {
             name = "terraformersmc"
         }
+        maven(url = "https://api.modrinth.com/maven") {
+            name = "modrinth"
+            content {
+                includeGroup("maven.modrinth")
+            }
+        }
         maven(url = "https://repo.viaversion.com/") {
             name = "viaversion"
         }

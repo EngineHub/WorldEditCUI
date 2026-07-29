@@ -46,6 +46,9 @@ dependencies {
     "implementation"(libs.cuiProtocol.fabric)
     implementation(libs.fabric.loader)
     implementation(libs.modmenu)
+    compileOnly(libs.iris) {
+        isTransitive = false
+    }
     compileOnly(libs.viafabricplus.api) {
         isTransitive = false
     }
