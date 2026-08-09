@@ -5,6 +5,13 @@
   "name": "WorldEditCUI",
   "description": "Client-side user interface for WorldEdit",
   "authors": [
+    {
+      "name": "EngineHub",
+      "contact": {
+        "homepage": "https://enginehub.org/",
+        "discord": "https://discord.gg/enginehub"
+      }
+    },
     "lahwran",
     "yetanotherx",
     "Mumfrey",
@@ -13,12 +20,18 @@
   ],
   "contact": {
     "homepage": "https://github.com/EngineHub/WorldEditCUI",
-    "sources": "https://github.com/EngineHub/WorldEditCUI"
+    "sources": "https://github.com/EngineHub/WorldEditCUI",
+    "issues": "https://github.com/EngineHub/WorldEditCUI/issues",
+    "discord": "https://discord.gg/enginehub"
   },
   "custom": {
     "modmenu": {
       "links": {
-        "modmenu.discord": "https://discord.gg/enginehub"
+        "modmenu.discord": "https://discord.gg/enginehub",
+        "modmenu.modrinth": "https://modrinth.com/mod/worldedit-cui",
+        "modmenu.curseforge": "https://www.curseforge.com/minecraft/mc-mods/worldeditcui-fabric",
+        "modmenu.github_sponsors": "https://github.com/sponsors/EngineHub",
+        "modmenu.opencollective": "https://opencollective.com/enginehub"
       }
     }
   },
@@ -48,9 +61,6 @@
   "suggests": {
     "iris": ">=1.11.0",
     "worldedit": ">=7.4.0"
-  },
-  "breaks": {
-    "worldedit": ["7.3.1", "7.3.2", "7.3.3", "7.3.4-beta-01", "7.3.4", "7.3.5", "7.3.6", "7.3.7", "7.3.8", "7.3.9-beta-01", "7.3.9", "7.3.10-beta-01", "7.3.10", "7.3.11", "7.3.12-beta-01", "7.3.12-beta-02"]
   },
   "accessWidener" : "worldeditcui.accesswidener"
 }
