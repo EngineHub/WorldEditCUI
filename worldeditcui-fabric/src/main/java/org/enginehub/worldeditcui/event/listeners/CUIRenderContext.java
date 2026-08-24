@@ -27,6 +27,7 @@ public final class CUIRenderContext implements RenderSink {
     private Vector3 cameraPos;
     private float dt;
     private RenderSink delegateSink;
+    private boolean hideObstructedLines;
 
     public Vector3 cameraPos() {
         return this.cameraPos;
@@ -54,10 +55,11 @@ public final class CUIRenderContext implements RenderSink {
         }
     }
 
-    void init(final Vector3 cameraPos, final float dt, final RenderSink sink) {
+    void init(final Vector3 cameraPos, final float dt, final RenderSink sink, final boolean hideObstructedLines) {
         this.cameraPos = cameraPos;
         this.dt = dt;
         this.delegateSink = sink;
+        this.hideObstructedLines = hideObstructedLines;
     }
 
     /**
@@ -66,6 +68,7 @@ public final class CUIRenderContext implements RenderSink {
     void reset() {
         this.cameraPos = null;
         this.delegateSink = null;
+        this.hideObstructedLines = false;
     }
 
     // RenderSink delegation
@@ -84,6 +87,9 @@ public final class CUIRenderContext implements RenderSink {
 
     @Override
     public boolean apply(final LineStyle line, final RenderStyle.RenderType type) {
+        if (this.hideObstructedLines && line.renderType == RenderStyle.RenderType.HIDDEN) {
+            return false;
+        }
         return this.delegateSink.apply(line, type);
     }
 

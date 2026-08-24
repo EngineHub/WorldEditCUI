@@ -33,12 +33,12 @@ public interface RenderStyle
 		/**
 		 * Render type for "hidden" lines (under world geometry)
 		 */
-		HIDDEN(CompareOp.GREATER_THAN),
+		HIDDEN(CompareOp.LESS_THAN),
 		
 		/**
 		 * Render type for visible lines (over world geometry) 
 		 */
-		VISIBLE(CompareOp.LESS_THAN_OR_EQUAL);
+		VISIBLE(CompareOp.GREATER_THAN_OR_EQUAL);
 		
 		final CompareOp depthTest;
 

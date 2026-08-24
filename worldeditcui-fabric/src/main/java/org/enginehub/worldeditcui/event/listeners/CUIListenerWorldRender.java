@@ -103,7 +103,12 @@ public class CUIListenerWorldRender
 			}
 			final ProfilerFiller profiler = Profiler.get();
 			profiler.push("worldeditcui");
-			this.ctx.init(new Vector3(this.minecraft.gameRenderer.mainCamera().position()), partialTicks, sink);
+			this.ctx.init(
+				new Vector3(this.minecraft.gameRenderer.mainCamera().position()),
+				partialTicks,
+				sink,
+				this.controller.getConfiguration().isHideObstructedLines()
+			);
 			final GpuBufferSlice fogStart = RenderSystem.getShaderFog();
 			RenderSystem.setShaderFog(this.minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
 			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
