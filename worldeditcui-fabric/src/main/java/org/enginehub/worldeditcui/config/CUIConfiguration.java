@@ -81,6 +81,7 @@ public final class CUIConfiguration implements InitialisationFactory {
 	private boolean debugMode = false;
 	private boolean promiscuous = false;
 	private boolean clearAllOnKey = false;
+	private boolean hideObstructedLines = false;
 
     private Colour cuboidGridColor = ConfiguredColour.CUBOIDGRID.getDefault();
     private Colour cuboidEdgeColor = ConfiguredColour.CUBOIDBOX.getDefault();
@@ -143,6 +144,10 @@ public final class CUIConfiguration implements InitialisationFactory {
 		this.clearAllOnKey = clearAllOnKey;
 	}
 
+	public boolean isHideObstructedLines() {
+		return this.hideObstructedLines;
+	}
+
 	private static Path getConfigFile() {
 		return FabricLoader.getInstance().getConfigDir().resolve(CUIConfiguration.CONFIG_FILE_NAME);
 	}
@@ -168,6 +173,7 @@ public final class CUIConfiguration implements InitialisationFactory {
 		configArray.put("debugMode", config.debugMode);
 		configArray.put("promiscuous", config.promiscuous);
 		configArray.put("clearAllOnKey", config.clearAllOnKey);
+		configArray.put("hideObstructedLines", config.hideObstructedLines);
 
 		configArray.put("cuboidGridColor", config.cuboidGridColor);
 		configArray.put("cuboidEdgeColor", config.cuboidEdgeColor);
@@ -203,6 +209,7 @@ public final class CUIConfiguration implements InitialisationFactory {
 		debugMode 				= (Boolean) configArray.get("debugMode");
 		promiscuous 			= (Boolean) configArray.get("promiscuous");
 		clearAllOnKey 			= (Boolean) configArray.get("clearAllOnKey");
+		hideObstructedLines 	= (Boolean) configArray.get("hideObstructedLines");
 
 		cuboidGridColor 		= (Colour) 	configArray.get("cuboidGridColor");
 		cuboidEdgeColor 		= (Colour) 	configArray.get("cuboidEdgeColor");
@@ -223,7 +230,7 @@ public final class CUIConfiguration implements InitialisationFactory {
 
 	public Object getDefaultValue(String text) {
 		return switch (text) {
-			case "debugMode", "promiscuous", "clearAllOnKey" -> false;
+			case "debugMode", "promiscuous", "clearAllOnKey", "hideObstructedLines" -> false;
 			case "cuboidGridColor" -> ConfiguredColour.CUBOIDGRID.getDefault();
 			case "cuboidEdgeColor" -> ConfiguredColour.CUBOIDBOX.getDefault();
 			case "cuboidFirstPointColor" -> ConfiguredColour.CUBOIDPOINT1.getDefault();
@@ -266,6 +273,7 @@ public final class CUIConfiguration implements InitialisationFactory {
 			case "debugMode" -> "worldeditcui.options.debugMode";
 			case "promiscuous" -> "worldeditcui.options.compat.spammy";
 			case "clearAllOnKey" -> "worldeditcui.options.extra.clearall";
+			case "hideObstructedLines" -> "worldeditcui.options.extra.hideObstructedLines";
 			case "cuboidGridColor" -> "worldeditcui.color.cuboidgrid";
 			case "cuboidEdgeColor" -> "worldeditcui.color.cuboidedge";
 			case "cuboidFirstPointColor" -> "worldeditcui.color.cuboidpoint1";

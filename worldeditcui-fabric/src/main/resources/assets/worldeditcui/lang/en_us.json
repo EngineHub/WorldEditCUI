@@ -39,6 +39,8 @@
     "worldeditcui.options.extra.title": "Advanced Options",
     "worldeditcui.options.extra.clearall": "Clear displayed regions",
     "worldeditcui.options.extra.clearall.tooltip": "Clear all displayed regions when %s (%s) is pressed",
+    "worldeditcui.options.extra.hideObstructedLines": "Hide obstructed lines",
+    "worldeditcui.options.extra.hideObstructedLines.tooltip": "Do not render selection lines behind blocks or other world geometry",
     "worldeditcui.options.done": "Done",
     "worldeditcui.options.debugMode": "Debug Mode",
     "worldeditcui.options.debugMode.tooltip": "Enable advanced Debug Mode"

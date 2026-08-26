@@ -86,7 +86,7 @@ public final class VanillaPipelineProvider implements PipelineProvider {
         private static BatchedRenderSink.RenderTarget createQuadsTarget(final String idSuffix, final CompareOp depthTest) {
             final RenderPipeline pipeline = RenderPipeline.builder(QUADS_SNIPPET)
                 .withLocation(Identifier.fromNamespaceAndPath("worldeditcui", "pipeline/quads_" + idSuffix))
-                .withDepthStencilState(new DepthStencilState(depthTest, true))
+                .withDepthStencilState(new DepthStencilState(depthTest, false))
                 .build();
             if (IRIS_LOADED) {
                 IrisPipelineIntegration.registerQuads(pipeline);
@@ -105,7 +105,7 @@ public final class VanillaPipelineProvider implements PipelineProvider {
         private static BatchedRenderSink.RenderTarget createLinesTarget(final String idSuffix, final CompareOp depthTest) {
             final RenderPipeline pipeline = RenderPipeline.builder(LINES_SNIPPET)
                 .withLocation(Identifier.fromNamespaceAndPath("worldeditcui", "pipeline/lines_" + idSuffix))
-                .withDepthStencilState(new DepthStencilState(depthTest, true))
+                .withDepthStencilState(new DepthStencilState(depthTest, false))
                 .build();
             if (IRIS_LOADED) {
                 IrisPipelineIntegration.registerLines(pipeline);
