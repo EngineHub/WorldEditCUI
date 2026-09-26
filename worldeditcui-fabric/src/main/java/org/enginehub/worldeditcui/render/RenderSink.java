@@ -9,6 +9,8 @@
  */
 package org.enginehub.worldeditcui.render;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import org.enginehub.worldeditcui.config.Colour;
 
 /**
@@ -64,6 +66,14 @@ public interface RenderSink {
      * @return this
      */
     RenderSink vertex(double x, double y, double z);
+
+    /**
+     * Called when a frame is initialised for collecting.
+     *
+     * @param collector The collector
+     * @param poseStack The pose stack
+     */
+    void beginFrame(SubmitNodeCollector collector, PoseStack poseStack);
 
     /**
      * Begin drawing a <em>line loop</em>.

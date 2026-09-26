@@ -51,9 +51,8 @@ public class RenderChunkBoundary extends RenderRegion
 		this.grid.setPosition(new Vector3(xBase - OFFSET, yMin, zBase - 16 - OFFSET), new Vector3(xBase + 16 + OFFSET, yMax, zBase + OFFSET));
 
 		ctx.flush();
-		ctx.matrixStack().pushMatrix();
-		ctx.matrixStack().translate(0.0f, (float) -ctx.cameraPos().getY(), 0.0f);
-		ctx.applyMatrices();
+		ctx.poseStack().pushPose();
+		ctx.poseStack().translate(0.0f, (float) -ctx.cameraPos().getY(), 0.0f);
 
 		ctx.withCameraAt(Vector3.ZERO, this.grid::render);
 
@@ -65,8 +64,7 @@ public class RenderChunkBoundary extends RenderRegion
 		}
 
 		ctx.flush();
-		ctx.matrixStack().popMatrix();
-		ctx.applyMatrices();
+		ctx.poseStack().popPose();
 	}
 
 	private void renderChunkBorder(final CUIRenderContext ctx, final double yMin, final double yMax, final double xBase, final double zBase)

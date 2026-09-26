@@ -9,13 +9,13 @@
  */
 package org.enginehub.worldeditcui.event.listeners;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import org.enginehub.worldeditcui.config.Colour;
 import org.enginehub.worldeditcui.render.LineStyle;
 import org.enginehub.worldeditcui.render.RenderSink;
 import org.enginehub.worldeditcui.render.RenderStyle;
 import org.enginehub.worldeditcui.util.Vector3;
-import org.joml.Matrix4fStack;
 
 import java.util.function.Consumer;
 
@@ -28,17 +28,14 @@ public final class CUIRenderContext implements RenderSink {
     private float dt;
     private RenderSink delegateSink;
     private boolean hideObstructedLines;
+    private PoseStack poseStack;
 
     public Vector3 cameraPos() {
         return this.cameraPos;
     }
 
-    public Matrix4fStack matrixStack() {
-        return RenderSystem.getModelViewStack();
-    }
-
-    public void applyMatrices() {
-        // RenderSystem.applyModelViewMatrix();
+    public PoseStack poseStack() {
+        return this.poseStack;
     }
 
     public float dt() {
@@ -55,11 +52,12 @@ public final class CUIRenderContext implements RenderSink {
         }
     }
 
-    void init(final Vector3 cameraPos, final float dt, final RenderSink sink, final boolean hideObstructedLines) {
+    void init(final Vector3 cameraPos, final float dt, final RenderSink sink, final boolean hideObstructedLines, final PoseStack poseStack) {
         this.cameraPos = cameraPos;
         this.dt = dt;
         this.delegateSink = sink;
         this.hideObstructedLines = hideObstructedLines;
+        this.poseStack = poseStack;
     }
 
     /**
@@ -69,9 +67,15 @@ public final class CUIRenderContext implements RenderSink {
         this.cameraPos = null;
         this.delegateSink = null;
         this.hideObstructedLines = false;
+        this.poseStack = null;
     }
 
     // RenderSink delegation
+
+    @Override
+    public void beginFrame(final SubmitNodeCollector collector, final PoseStack poseStack) {
+        this.delegateSink.beginFrame(collector, poseStack);
+    }
 
     @Override
     public CUIRenderContext color(final float r, final float g, final float b, final float alpha) {

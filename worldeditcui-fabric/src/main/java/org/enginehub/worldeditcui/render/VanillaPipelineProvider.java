@@ -9,16 +9,18 @@
  */
 package org.enginehub.worldeditcui.render;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.BlendFunction;
-import com.mojang.blaze3d.pipeline.ColorTargetState;
-import com.mojang.blaze3d.pipeline.DepthStencilState;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.CompareOp;
+import com.mojang.renderpearl.api.pipeline.BlendFunction;
+import com.mojang.renderpearl.api.pipeline.ColorTargetState;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
+import com.mojang.renderpearl.api.pipeline.DepthStencilState;
+import com.mojang.renderpearl.api.pipeline.PrimitiveTopology;
+import com.mojang.renderpearl.api.pipeline.RenderPipeline;
+import com.mojang.renderpearl.api.pipeline.ShaderType;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexFormat;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.oit.OitPipelineSet;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.resources.Identifier;
@@ -26,6 +28,7 @@ import net.minecraft.resources.Identifier;
 import java.util.EnumMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public final class VanillaPipelineProvider implements PipelineProvider {
 
@@ -48,8 +51,8 @@ public final class VanillaPipelineProvider implements PipelineProvider {
 
         private static RenderPipeline.Snippet createSnippet(final RenderPipeline base, final VertexFormat vertexFormat, final PrimitiveTopology primitiveTopology) {
             final RenderPipeline.Builder builder = RenderPipeline.builder()
-                .withVertexShader(base.getVertexShader())
-                .withFragmentShader(base.getFragmentShader())
+                .withVertexShader(base.getShaders().get(ShaderType.VERTEX))
+                .withFragmentShader(base.getShaders().get(ShaderType.FRAGMENT))
                 .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
                 .withCull(false)
                 .withVertexBinding(0, vertexFormat)
@@ -57,6 +60,20 @@ public final class VanillaPipelineProvider implements PipelineProvider {
                 .withDepthStencilState(DepthStencilState.DEFAULT);
             base.getBindGroupLayouts().forEach(builder::withBindGroupLayout);
             return builder.buildSnippet();
+        }
+
+        private static OitPipelineSet createOitPipelines(
+            final String name,
+            final RenderPipeline.Snippet snippet,
+            final CompareOp depthTest
+        ) {
+            final Consumer<RenderPipeline.Builder> applyDepthTest =
+                builder -> builder.withDepthStencilState(new DepthStencilState(depthTest, false));
+            return OitPipelineSet.builder(name, RenderPipeline.builder(snippet))
+                .withDepthBoundsModifier(applyDepthTest)
+                .withTransmittanceModifier(applyDepthTest)
+                .withAccumulateModifier(applyDepthTest)
+                .build();
         }
 
         @Override
@@ -91,14 +108,19 @@ public final class VanillaPipelineProvider implements PipelineProvider {
             if (IRIS_LOADED) {
                 IrisPipelineIntegration.registerQuads(pipeline);
             }
+            final OitPipelineSet oitPipelines = createOitPipelines(
+                "wecui_quads_" + idSuffix,
+                RenderPipelines.OIT_DEBUG_FILLED_SNIPPET,
+                depthTest
+            );
             final RenderSetup setup = RenderSetup.builder(pipeline)
+                .setOitPipelines(oitPipelines)
                 .sortOnUpload()
                 .createRenderSetup();
             final RenderType renderType = RenderType.create("wecui_quads_" + idSuffix, setup);
             return new BatchedRenderSink.RenderTarget(
-                PrimitiveTopology.QUADS,
-                DefaultVertexFormat.POSITION_COLOR,
-                executeInfo -> renderType.prepare().drawFromBuffer(executeInfo)
+                renderType,
+                DefaultVertexFormat.POSITION_COLOR
             );
         }
 
@@ -110,12 +132,18 @@ public final class VanillaPipelineProvider implements PipelineProvider {
             if (IRIS_LOADED) {
                 IrisPipelineIntegration.registerLines(pipeline);
             }
-            final RenderSetup setup = RenderSetup.builder(pipeline).createRenderSetup();
+            final OitPipelineSet oitPipelines = createOitPipelines(
+                "wecui_lines_" + idSuffix,
+                RenderPipelines.OIT_LINES_SNIPPET,
+                depthTest
+            );
+            final RenderSetup setup = RenderSetup.builder(pipeline)
+                .setOitPipelines(oitPipelines)
+                .createRenderSetup();
             final RenderType renderType = RenderType.create("wecui_lines_" + idSuffix, setup);
             return new BatchedRenderSink.RenderTarget(
-                PrimitiveTopology.LINES,
-                DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH,
-                executeInfo -> renderType.prepare().drawFromBuffer(executeInfo)
+                renderType,
+                DefaultVertexFormat.POSITION_COLOR_NORMAL_LINE_WIDTH
             );
         }
     }

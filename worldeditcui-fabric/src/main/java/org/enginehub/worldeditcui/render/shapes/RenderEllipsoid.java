@@ -49,9 +49,8 @@ public class RenderEllipsoid extends RenderRegion
 	public void render(CUIRenderContext ctx)
 	{
 		ctx.flush();
-		ctx.matrixStack().pushMatrix();
-		ctx.matrixStack().translate((float) (this.centreX - ctx.cameraPos().getX()), (float) (this.centreY - ctx.cameraPos().getY()), (float) (this.centreZ - ctx.cameraPos().getZ()));
-		ctx.applyMatrices();
+		ctx.poseStack().pushPose();
+		ctx.poseStack().translate((float) (this.centreX - ctx.cameraPos().getX()), (float) (this.centreY - ctx.cameraPos().getY()), (float) (this.centreZ - ctx.cameraPos().getZ()));
 
 		for (LineStyle line : this.style.getLines())
 		{
@@ -65,8 +64,7 @@ public class RenderEllipsoid extends RenderRegion
 		}
 
 		ctx.flush();
-		ctx.matrixStack().popMatrix();
-		ctx.applyMatrices();
+		ctx.poseStack().popPose();
 	}
 	
 	protected void drawXZPlane(final CUIRenderContext ctx)

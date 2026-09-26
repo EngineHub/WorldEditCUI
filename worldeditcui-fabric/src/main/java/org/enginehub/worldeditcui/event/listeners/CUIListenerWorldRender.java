@@ -9,9 +9,11 @@
  */
 package org.enginehub.worldeditcui.event.listeners;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.buffers.GpuBufferSlice;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.fog.FogRenderer;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -19,8 +21,6 @@ import org.enginehub.worldeditcui.WorldEditCUI;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.RenderSink;
 import org.enginehub.worldeditcui.util.Vector3;
-import org.joml.Matrix4fStack;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -93,7 +93,7 @@ public class CUIListenerWorldRender
 		this.sink = null;
 	}
 
-	public void onRender(final float partialTicks) {
+	public void onRender(final float partialTicks, final SubmitNodeCollector collector, final PoseStack poseStack) {
 		try {
 			final RenderSink sink = this.providePipeline();
 			if (this.activePipeline != null && !this.activePipeline.shouldRender())
@@ -103,28 +103,33 @@ public class CUIListenerWorldRender
 			}
 			final ProfilerFiller profiler = Profiler.get();
 			profiler.push("worldeditcui");
-			this.ctx.init(
-				new Vector3(this.minecraft.gameRenderer.mainCamera().position()),
-				partialTicks,
-				sink,
-				this.controller.getConfiguration().isHideObstructedLines()
-			);
 			final GpuBufferSlice fogStart = RenderSystem.getShaderFog();
-			RenderSystem.setShaderFog(this.minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
-			final Matrix4fStack poseStack = RenderSystem.getModelViewStack();
-			poseStack.pushMatrix();
-
+			boolean posePushed = false;
 			try {
+				this.ctx.init(
+					new Vector3(this.minecraft.gameRenderer.mainCamera().position()),
+					partialTicks,
+					sink,
+					this.controller.getConfiguration().isHideObstructedLines(),
+					poseStack
+				);
+				this.ctx.beginFrame(collector, poseStack);
+				RenderSystem.setShaderFog(this.minecraft.gameRenderer.fogRenderer.getBuffer(FogRenderer.FogMode.NONE));
+				poseStack.pushPose();
+				posePushed = true;
 				this.controller.renderSelections(this.ctx);
 				this.sink.flush();
 			} catch (final Exception e) {
 				this.controller.getDebugger().error("Error while attempting to render WorldEdit CUI", e);
 				this.invalidatePipeline();
+			} finally {
+				if (posePushed) {
+					poseStack.popPose();
+				}
+				RenderSystem.setShaderFog(fogStart);
+				this.ctx.reset();
+				profiler.pop();
 			}
-
-			poseStack.popMatrix();
-			RenderSystem.setShaderFog(fogStart);
-			profiler.pop();
 		} catch (final Exception ex)
 		{
 			this.controller.getDebugger().error("Failed while preparing state for WorldEdit CUI", ex);
