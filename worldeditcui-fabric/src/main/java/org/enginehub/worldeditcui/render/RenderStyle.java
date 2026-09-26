@@ -9,7 +9,7 @@
  */
 package org.enginehub.worldeditcui.render;
 
-import com.mojang.blaze3d.platform.CompareOp;
+import com.mojang.renderpearl.api.pipeline.CompareOp;
 import org.enginehub.worldeditcui.config.Colour;
 
 /**

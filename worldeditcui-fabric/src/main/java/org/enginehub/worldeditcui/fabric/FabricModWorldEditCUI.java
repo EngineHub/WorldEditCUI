@@ -9,7 +9,7 @@
  */
 package org.enginehub.worldeditcui.fabric;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -34,7 +34,6 @@ import org.enginehub.worldeditcui.protocol.CUIPacket;
 import org.enginehub.worldeditcui.protocol.CUIPacketHandler;
 import org.enginehub.worldeditcui.render.PipelineProvider;
 import org.enginehub.worldeditcui.render.VanillaPipelineProvider;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.MixinEnvironment;
 
 import java.util.List;
@@ -53,9 +52,9 @@ public final class FabricModWorldEditCUI implements ModInitializer {
     private static final KeyMapping.Category KEYBIND_CATEGORY_WECUI
             = new KeyMapping.Category(Identifier.fromNamespaceAndPath(MOD_ID, "general"));
 
-    private final KeyMapping keyBindToggleUI = key("toggle", GLFW.GLFW_KEY_UNKNOWN);
-    private final KeyMapping keyBindClearSel = key("clear", GLFW.GLFW_KEY_UNKNOWN);
-    private final KeyMapping keyBindChunkBorder = key("chunk", GLFW.GLFW_KEY_UNKNOWN);
+    private final KeyMapping keyBindToggleUI = key("toggle", InputConstants.UNKNOWN.getValue());
+    private final KeyMapping keyBindClearSel = key("clear", InputConstants.UNKNOWN.getValue());
+    private final KeyMapping keyBindChunkBorder = key("chunk", InputConstants.UNKNOWN.getValue());
 
     private static final List<PipelineProvider> RENDER_PIPELINES = List.of(
             new VanillaPipelineProvider()
@@ -104,15 +103,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
             this.onEndExtraction(ctx);
         });
         LevelRenderEvents.END_MAIN.register(ctx -> {
-            try {
-                RenderSystem.getModelViewStack().pushMatrix();
-                RenderSystem.getModelViewStack().mul(ctx.poseStack().last().pose());
-                // RenderSystem.applyModelViewMatrix();
-                this.onPostRenderEntities(ctx);
-            } finally {
-                RenderSystem.getModelViewStack().popMatrix();
-                // RenderSystem.applyModelViewMatrix();
-            }
+            this.onPostRenderEntities(ctx);
         });
     }
 
@@ -191,7 +182,7 @@ public final class FabricModWorldEditCUI implements ModInitializer {
 
     public void onPostRenderEntities(final LevelRenderContext ctx) {
         if (this.visible) {
-            this.worldRenderListener.onRender(lastPartialTicks);
+            this.worldRenderListener.onRender(lastPartialTicks, ctx.submitNodeCollector(), ctx.poseStack());
         }
     }
 

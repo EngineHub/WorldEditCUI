@@ -9,12 +9,15 @@
  */
 package org.enginehub.worldeditcui.render;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.blaze3d.vertex.VertexFormat;
-import net.minecraft.client.renderer.StagedVertexBuffer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.renderpearl.api.vertex.VertexFormat;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Vector3f;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class BatchedRenderSink implements RenderSink {
     private enum Primitive {
@@ -24,12 +27,12 @@ public final class BatchedRenderSink implements RenderSink {
     }
 
     private final TypeFactory types;
+    private @Nullable SubmitNodeCollector collector;
+    private @Nullable PoseStack poseStack;
     private @Nullable VariantSet currentVariants;
     private @Nullable RenderTarget activeTarget;
     private @Nullable Primitive activePrimitive;
-    private final StagedVertexBuffer vertexBuffer = new StagedVertexBuffer(() -> "WorldEditCUI", 1536);
-    private @Nullable StagedVertexBuffer.Draw draw;
-    private @Nullable VertexConsumer builder;
+    private @Nullable List<Vertex> vertices;
     private boolean active;
     private float r = -1f;
     private float g;
@@ -46,6 +49,12 @@ public final class BatchedRenderSink implements RenderSink {
 
     public BatchedRenderSink(final TypeFactory types) {
         this.types = types;
+    }
+
+    @Override
+    public void beginFrame(final SubmitNodeCollector collector, final PoseStack poseStack) {
+        this.collector = collector;
+        this.poseStack = poseStack;
     }
 
     @Override
@@ -72,7 +81,7 @@ public final class BatchedRenderSink implements RenderSink {
         if (this.r == -1f) {
             throw new IllegalStateException("No colour has been set!");
         }
-        if (!this.active || this.activeTarget == null || this.builder == null) {
+        if (!this.active || this.activeTarget == null || this.vertices == null) {
             throw new IllegalStateException("Tried to draw when not active");
         }
 
@@ -110,15 +119,15 @@ public final class BatchedRenderSink implements RenderSink {
     }
 
     private void addVertex(final double x, final double y, final double z, @Nullable final Vector3f normal) {
-        if (this.builder == null) {
-            throw new IllegalStateException("No active builder");
+        if (this.vertices == null) {
+            throw new IllegalStateException("No active vertex list");
         }
-        this.builder.addVertex((float) x, (float) y, (float) z)
-            .setColor(this.r, this.g, this.b, this.a)
-            .setLineWidth(this.currentLineWidth);
-        if (normal != null) {
-            this.builder.setNormal(normal.x(), normal.y(), normal.z());
-        }
+        this.vertices.add(new Vertex(
+            (float) x, (float) y, (float) z,
+            this.r, this.g, this.b, this.a,
+            this.currentLineWidth,
+            normal == null ? null : new Vector3f(normal)
+        ));
     }
 
     private Vector3f computeNormal(final double x0, final double y0, final double z0, final double x1, final double y1, final double z1) {
@@ -176,29 +185,23 @@ public final class BatchedRenderSink implements RenderSink {
 
     @Override
     public void flush() {
-        if (this.builder == null || this.activeTarget == null) {
+        if (this.vertices == null || this.activeTarget == null) {
             return;
         }
         if (this.active) {
             throw new IllegalStateException("Tried to flush while still active");
         }
-        this.vertexBuffer.upload();
-        try {
-            final StagedVertexBuffer.Draw draw = this.draw;
-            if (draw == null) {
-                throw new IllegalStateException("No active draw");
+        if (!this.vertices.isEmpty()) {
+            final SubmitNodeCollector collector = this.collector;
+            final PoseStack poseStack = this.poseStack;
+            if (collector == null || poseStack == null) {
+                throw new IllegalStateException("Render sink was not prepared for this frame");
             }
-            final StagedVertexBuffer.ExecuteInfo executeInfo = this.vertexBuffer.getExecuteInfo(draw);
-            if (executeInfo != null) {
-                this.activeTarget.draw(executeInfo);
-            }
-        } finally {
-            this.vertexBuffer.endFrame();
-            this.draw = null;
-            this.builder = null;
-            this.activeTarget = null;
-            this.activePrimitive = null;
+            this.activeTarget.draw(collector, poseStack, List.copyOf(this.vertices));
         }
+        this.vertices = null;
+        this.activeTarget = null;
+        this.activePrimitive = null;
     }
 
     private void end(final RenderTarget target, final Primitive primitive) {
@@ -219,9 +222,8 @@ public final class BatchedRenderSink implements RenderSink {
             this.flush();
         }
         if (this.activeTarget == null) {
-            this.draw = this.vertexBuffer.appendDraw(target.format(), target.primitiveTopology());
-            this.builder = this.vertexBuffer.getVertexBuilder(this.draw);
             this.activeTarget = target;
+            this.vertices = new ArrayList<>();
         }
         this.activePrimitive = primitive;
         this.active = true;
@@ -241,38 +243,46 @@ public final class BatchedRenderSink implements RenderSink {
         return this.activeTarget;
     }
 
-    @FunctionalInterface
-    public interface MeshDrawer {
-        void draw(StagedVertexBuffer.ExecuteInfo executeInfo);
-    }
+    private record Vertex(
+        float x,
+        float y,
+        float z,
+        float red,
+        float green,
+        float blue,
+        float alpha,
+        float lineWidth,
+        @Nullable Vector3f normal
+    ) {}
 
     public static final class RenderTarget {
-        private final PrimitiveTopology primitiveTopology;
-        private final VertexFormat format;
         private final boolean hasNormals;
-        private final MeshDrawer drawer;
+        private final RenderType renderType;
 
-        public RenderTarget(final PrimitiveTopology primitiveTopology, final VertexFormat format, final MeshDrawer drawer) {
-            this.primitiveTopology = primitiveTopology;
-            this.format = format;
+        public RenderTarget(final RenderType renderType, final VertexFormat format) {
+            this.renderType = renderType;
             this.hasNormals = format.contains("Normal");
-            this.drawer = drawer;
-        }
-
-        PrimitiveTopology primitiveTopology() {
-            return this.primitiveTopology;
-        }
-
-        VertexFormat format() {
-            return this.format;
         }
 
         boolean hasNormals() {
             return this.hasNormals;
         }
 
-        void draw(final StagedVertexBuffer.ExecuteInfo executeInfo) {
-            this.drawer.draw(executeInfo);
+        void draw(
+            final SubmitNodeCollector collector,
+            final PoseStack poseStack,
+            final List<Vertex> vertices
+        ) {
+            collector.submitCustomGeometry(poseStack, this.renderType, (pose, consumer) -> {
+                for (final Vertex vertex : vertices) {
+                    consumer.addVertex(pose, vertex.x(), vertex.y(), vertex.z())
+                        .setColor(vertex.red(), vertex.green(), vertex.blue(), vertex.alpha())
+                        .setLineWidth(vertex.lineWidth());
+                    if (this.hasNormals() && vertex.normal() != null) {
+                        consumer.setNormal(pose, vertex.normal().x(), vertex.normal().y(), vertex.normal().z());
+                    }
+                }
+            });
         }
     }
 
