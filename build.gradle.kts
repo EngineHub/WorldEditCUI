@@ -10,7 +10,7 @@ plugins {
 
 allprojects {
     group = "org.enginehub.worldeditcui"
-    version = "${rootProject.libs.versions.minecraft.get()}+03"
+    version = "${rootProject.libs.versions.minecraft.get()}+04+SNAPSHOT"
 
     repositories {
         mavenCentral {
