@@ -147,6 +147,11 @@ public class Render3DGrid extends RenderRegion
 					.vertex(x2, y, z2);
 			}
 
+			// Cull the vertical extent of lines spanning Y as well, so they don't extend far beyond view range
+			final double vy1 = Math.max(y1, -cullAt);
+			final double vy2 = Math.min(y2, cullAt);
+			final boolean drawVertical = vy1 < vy2;
+
 			final double xEnd = Math.min(x2, cullAtX);
 			for (double x = Math.max(x1, -cullAtX); x <= xEnd; x += this.spacing)
 			{
@@ -155,11 +160,14 @@ public class Render3DGrid extends RenderRegion
 					continue;
 				}
 
-				ctx.vertex(x, y1, z1)
-					.vertex(x, y2, z1)
-					.vertex(x, y1, z2)
-					.vertex(x, y2, z2)
-					.vertex(x, y2, z1)
+				if (drawVertical)
+				{
+					ctx.vertex(x, vy1, z1)
+						.vertex(x, vy2, z1)
+						.vertex(x, vy1, z2)
+						.vertex(x, vy2, z2);
+				}
+				ctx.vertex(x, y2, z1)
 					.vertex(x, y2, z2)
 					.vertex(x, y1, z1)
 					.vertex(x, y1, z2);
@@ -174,13 +182,16 @@ public class Render3DGrid extends RenderRegion
 				}
 
 				ctx.vertex(x1, y1, z)
-					.vertex(x2, y1, z)
-					.vertex(x1, y2, z)
-					.vertex(x2, y2, z)
-					.vertex(x2, y1, z)
-					.vertex(x2, y2, z)
-					.vertex(x1, y1, z)
-					.vertex(x1, y2, z);
+					.vertex(x2, y1, z);
+				if (drawVertical)
+				{
+					ctx.vertex(x1, vy1, z)
+						.vertex(x1, vy2, z)
+						.vertex(x2, vy1, z)
+						.vertex(x2, vy2, z);
+				}
+				ctx.vertex(x1, y2, z)
+					.vertex(x2, y2, z);
 			}
 
 			ctx.endLines();
